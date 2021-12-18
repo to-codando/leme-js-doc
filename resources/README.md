@@ -1043,7 +1043,7 @@ state do componente.
 
 ```javascript
     //componentes/appUserRegistration/index.js
-    import { store } from '../../store
+    import { store } from '../../store'
 
     const appUserRegistrations = (element) => {
 
@@ -1060,7 +1060,7 @@ No caso do cadastro de usuários, a mutation a ser executada deve ser **addUser*
 
 ```javascript
     //componentes/appUserRegistration/index.js
-    import { store } from '../../store
+    import { store } from '../../store'
 
     const appUserRegistrations = (element) => {
 
@@ -1101,7 +1101,7 @@ tirando proveito disso o state local pode ser apagado.
 
 ```javascript
     //componentes/appUserRegistration/index.js
-    import { store } from '../../store
+    import { store } from '../../store'
 
     const appUserRegistrations = (element) => {
 
@@ -1158,7 +1158,7 @@ local do componente cadastro de usuários será apagado.
 
 ```javascript
     //componentes/appUserRegistration/index.js
-    import { store } from '../../store
+    import { store } from '../../store'
 
     const appUserRegistrations = (element) => {
 
@@ -1193,7 +1193,7 @@ Ainda resta uma última ação necessária. A remoção de usuários.
 
 ```javascript
     //componentes/appUserRegistration/index.js
-    import { store } from '../../store
+    import { store } from '../../store'
 
     const appUserRegistrations = (element) => {
 
