@@ -42,7 +42,7 @@ Leme organiza o código através de padrões e convenções como:
 
 Os negócios digitais se tornaram o padrão, verdade seja dita. 
 
-Construir aplicações reativas com Leme JS acontece sem mágica, não há nada escondido, Leme só faz o que você decide e não gera complexidade extra. 
+Construir aplicações reativas com Leme JS acontece sem mágica, não há nada escondido, lemejs só faz o que você decide e não gera complexidade extra. 
 
 A vantagem dessa abordagem é o foco em construir para o negócio e não para os engenheiros e arquitetos. Isso significa que Leme JS te ajuda com
 os 20% de esforço que produz 80% do resultado total.
@@ -54,7 +54,7 @@ Se deseja ter total responsabilidade e controle sobre o código escrito, Leme JS
 ## Instalando Leme
 
 ```
-npm install leme
+npm install lemejs
 ```
 ## Iniciando um projeto do zero
 

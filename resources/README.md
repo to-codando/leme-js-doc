@@ -8,7 +8,7 @@ Logo a seguir está o passo a passo para dominar os recursos necessários para c
     
 ## Estrutura do componente
 
-Aplicações construídas com LEME JS podem fazer uso de componentes com os recursos abaixo:
+Aplicações construídas com Leme JS podem fazer uso de componentes com os recursos abaixo:
 
 - Componentes
     - eventos
@@ -29,7 +29,7 @@ Aplicações construídas com LEME JS podem fazer uso de componentes com os recu
 ---
 #### **Funções como componentes**
 
-Para LEME JS componentes são apenas funções que recebem parametros e retornam objetos.
+Para Leme JS componentes são apenas funções que recebem parametros e retornam objetos.
 
 ```javascript
 // index.js
@@ -82,8 +82,7 @@ Acima o arquivo de estilos css, onde toda a configuração visual deve ser escri
 
 #### 1 - NOME DO COMPONENTE
 
-Componentes para *LEME JS* são apenas funções e por isso o nome de cada função de componente é muito importante, pois, é através desse
-nome que a tag html do componente será definida.
+Componentes para *Leme JS* são apenas funções e por isso o nome de cada função de componente é muito importante, pois, é através desse nome que a tag html do componente será definida.
 
 ```javascript
 export const appHelloWorld = ({ props }) => { ... }
@@ -123,11 +122,11 @@ Qualquer alteração nas propriedades do objeto de estado resultará na atualiza
 
 É graças a função fábrica ***observableFactory*** que retorna um objeto observável que se faz possível detectar alterações no estado da aplicação e reagir a elas.
 
-O state é um objeto observável e sempre que modificado o componente é renderizado novamente.
+O state é um objeto observável e sempre que modificado Leme JS renderiza o componente novamente.
 
 #### 3 - TEMPLATE 
 
-O template do componente é responsável por exibir os dados armazenados nas propriedades do state do componente.
+O template do componente é responsável por exibir os dados armazenados nas propriedades do state.
 
 ```javascript
 //template.js
@@ -137,10 +136,9 @@ const template = ({ state, props, html }) => html`
 `
 ```
 
-Observe que a função template é um mero **literal template** que recebe os parâmetros state, props e html e retorna um **tagged template** *html* com o valor da propriedade *title* presente no state.
+Observe que a o template é uma função que recebe os parâmetros state, props e html e retorna um **tagged function** *html* com o valor da propriedade *title* presente no state.
 
-> Acima html é um tagged function, se você não sabe sobre tagged functions ou literal templates vai gostar
-> de ler mais sobre o assunto [aqui](https://css-tricks.com/template-literals/).
+> Acima html é um tagged function, se você não sabe sobre tagged functions ou literal templates vai gostar de ler mais sobre o assunto [aqui](https://css-tricks.com/template-literals/).
 
 #### 4 - ESTILOS CSS
 
@@ -223,7 +221,7 @@ O momento ideal para adicionar eventos a elementos html é após a rederização
 
 Para adicionar eventos após a inicialização do componente é possível usar o hook ***afterOnInit*** e após a renderização ***afterOnRender***.
 
-Hooks são apenas funções que podem acessas os métodos ***on, queryOnce e queryAll***.
+Hooks são apenas funções que podem acessar os métodos ***on, queryOnce e queryAll***.
 
 **queryOnce**
 
@@ -239,18 +237,18 @@ Hooks são apenas funções que podem acessas os métodos ***on, queryOnce e que
 
 - Adiciona um evento a um elemento html para executar uma função.
 - O primeiro parâmetro recebido deve ser o nome do evento
-- O segundo parâmetro deve ser um ou mais elementos html definidos com queryOnce ou queryAll
-- O terceiro parâmetro deve ser a função ou método a ser executado
+- O segundo parâmetro deve ser um elemento ou um array de elementos html
+- O terceiro parâmetro deve ser a função 
 
 
 #### Hooks
 
-Atualmente os hooks são quatros funções que podem ser executadas, cada uma, em um momento específico do ciclo de vida do componente.
+Atualmente os hooks são quatro funções que podem ser executadas, cada uma, em um momento específico do ciclo de vida do componente.
 
 - beforeOnInit - Executada um única vez antes da inicialização do componente
 - afterOnInit - Executada um única vez depois da inicialização do componente
-- beforeOnRender - Executada antes da renderização do componente e toda vez que é renderizado
-- afterOnRender - Executada depois da renderização do componente e toda vez que é renderizado
+- beforeOnRender - Executada uma única vez antes da renderização do componente toda vez que é renderizado
+- afterOnRender - Executada um aúnica vez depois da renderização do componente toda vez que é renderizado
 
 ```javascript
 const appHelloWorld = ({ props }) => {
@@ -308,7 +306,7 @@ Na definicação de componente acima, o gerenciamento de estado local é definid
     })
 ```
 
-É dessa forma que deve ser definido o gerenciamento de estado local. Pois, *observableFactory* retorna um objeto observável com propriedades especiais que podem ser utilizadas tando para atualizar o *state* do componente como para observar atualizações e reagir a elas de alguma maneira.
+É dessa forma que deve ser definido o gerenciamento de estado local. Pois, *observableFactory* retorna um objeto observável com propriedades especiais que podem ser utilizadas tanto para atualizar o *state* do componente como para observar atualizações e reagir a elas de alguma forma.
 
 Abaixo a lista de propriedades retornadas por *observableFactory*.
 
@@ -375,9 +373,9 @@ Quando uma alteração ocorrer em uma das propriedades do estado, as funções o
 
 No primeiro caso uma função anônima foi adicionada como observadora. Já no segundo caso um método do componente foi adicionado.
 
-Observe que para ambos os casos, a referência para o observador adicionado é retornado para que posteiormente possa ser removidos caso necessário.
+Observe que para ambos os casos, a referência para o observador adicionado é retornada e armazenada em uma variável para que posteiormente essa variável possa ser utilizada para desligar os observadores caso necessário. Essas referências são:
 
-> referências: onStateChange e OnUpdateState
+> onStateChange e OnUpdateState
 
 #### REMOVENDO OBSERVADORES
 
@@ -394,29 +392,29 @@ state.off(onStateChange)
 ```
 
 Para remover um observador basta informar a referencia deste para a função especial **off**.
+No código logo acima temos um exemplo claro desse comportamento.
+
 
 ### Compartilhando o state
 
 Uma maneira simples e eficaz para compartilhar o state entre componentes é através de objetos observáveis.
 
-Por exemplo, no caso em que um componente pai quer enviar informações em um determinado momento para o componente filho.
-
 * **Compartilhado para baixo**
 
-Primeiro um serviço mensageiro pode ser criado como no exemplo abaixo onde messengerDown envia informações as componentes
-filhos e messengerUp ao componente pai.
+Primeiro um serviço mensageiro pode ser criado como no exemplo abaixo onde messengerDown envia informações para componentes filhos e messengerUp ao componente pai.
 
 ```javascript
 //messenger.service.js
 
 import { observableFactory } from "r9x_js";
+
 export const messengerUp = observableFactory({})
 export const messengerDown = observableFactory({})
 ```
 
 No componente pai então o serviço mensageiro é importado e messengerDown define as informações a serem enviadas aos componentes filhos.
 
-Ainda no componente pai, messengerUp é configurado para escutar alterações que devem gerar efeitos colaterias no componente pai através da função **messengerUp.on** que adiciona uma função como handler a ser executado quando uma mensagem de dados for enviada ao componente pai.
+Ainda no componente pai, messengerUp é configurado para escutar alterações que devem gerar efeitos colaterias no componente pai através da função **messengerUp.on** que adiciona uma função como manipulador a ser executado quando uma mensagem de dados for enviada ao componente pai.
 
 > Receber informações de componentes filhos pode ser interessante por exemplo para validação de formulários onde uma operação só pode ser executada caso todos os campos do formulário estejam validados.
 
@@ -449,7 +447,7 @@ const appHelloWorld = ( {props} ) => {
 
     const beforeOnInit = () => {
         messengerDown.set({ ...state.get() })
-        messengerUp.on((payload) => console.log(payload))
+        messengerUp.on((payload) => state.set({ ...payload }))
     }    
 
     return {
@@ -461,7 +459,7 @@ const appHelloWorld = ( {props} ) => {
 }
 ```
 
-O exemplo acima é de como se parece um **componente pai** compartilhando o state com o componente filho. Mas, o componente filho se parece muito com o componente pai. Veja abaixo:
+O exemplo acima é de como se parece um **componente pai** compartilhando o state com o componente filho. Mesmo assim, o componente filho se parece muito com o componente pai. Veja abaixo:
 
 * **compartilhando para cima**
 
@@ -486,7 +484,7 @@ const appName = ({props}) => {
     })
 
     const beforeOnInit = () => {
-        messengerUp.set({ anyData: ''})
+        messengerUp.set({ title: 'Other title...'})
         messengerDown.on((payload) => updateState(payload))
     }
 
@@ -513,7 +511,7 @@ No caso em que o componente pai utiliza o método messengerDown.set para enviar 
 
 const beforeOnInit = () => {
     messengerDown.set({ ...state.get() })
-    messengerUp.on((payload) => console.log(payload))
+    messengerUp.on((payload) =>  state.set({ ...payload }))
 }
 ```
 
@@ -549,7 +547,7 @@ Abaixo como componentes irmãos podem se comunicar por objetos observáveis.
 import { messengerA, messengerB } from '../services/messenger'
 
 const beforeOnInit = () => {
-    messengerB.set({ anyData: ''})
+    messengerB.set({ anyData: 'Any text...'})
     messengerA.on((payload) => updateState(payload))
 }
 ```
@@ -559,7 +557,7 @@ const beforeOnInit = () => {
 import { messengerA, messengerB } from '../services/messenger'
 
 const beforeOnInit = () => {
-    messengerA.set({ anyData: ''})
+    messengerA.set({ otherData: 'Other text...'})
     messengerB.on((payload) => updateState(payload))
 }
 ```
@@ -575,7 +573,7 @@ componentes para enviar mensagens ao componente A.
 De forma identica o messenger B pertence ao componente B e deve ser utilzado por 
 outros componentes para enviar mensagens ao componente B.
 
-Observe que no trecho de código abaixo está acontecendo exatamente assim:
+Observe que no trecho de código abaixo está acontecendo exatamente assim.
 
 * Componente A
 
@@ -671,10 +669,9 @@ Implementar uma **store** traz diversos benefícios:
 - Simplifica a comunicação entre componentes.
 - Diminui a necessidade de objetos observaveis (messengerUp, messengerDown).
 - Diminui a necessidade de usar emissores de eventos (eventDrive).
-- Permite navegar na linha do tempo das modificações do state da aplicação.
-- Permite organizar o código por módulos.
-- Diminui e extrai a lógica de modificação de dados nos componentes.
-- Redução da quantidade de código da aplicação de forma geral.
+- Permite navegar através do histórico de modificações do state da aplicação.
+- Diminui e extrai a lógica de modificação de dados de dentro dos componentes.
+- Ruduz da quantidade de código na aplicação de forma geral.
 
 #### Criando uma store
 
