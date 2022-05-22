@@ -670,8 +670,8 @@ Implementar uma **store** traz diversos benefícios:
 - Diminui a necessidade de objetos observaveis (messengerUp, messengerDown).
 - Diminui a necessidade de usar emissores de eventos (eventDrive).
 - Permite navegar através do histórico de modificações do state da aplicação.
-- Diminui e extrai a lógica de modificação de dados de dentro dos componentes.
-- Ruduz da quantidade de código na aplicação de forma geral.
+- Extrai a lógica de modificação de dados de dentro dos componentes e a reduz.
+- Ruduz da quantidade de código na aplicação de modo geral.
 
 #### Criando uma store
 
@@ -699,10 +699,9 @@ Por fim, será necessário criar um terceiro arquivo index.js na raiz da pasta s
 
 1. **Definindo o state**
 
-O state nesse caso é global, por tanto, deve concentrar todos os dados que serão compartilhados entre
-os componentes da aplicação.
+O state nesse caso é global, por tanto, deve concentrar todos os dados que serão compartilhados entre os componentes da aplicação.
 
-Considere um aplicativo de gerenenciamento de usuários formada ao menos por 2 componentes:
+Considere um aplicativo de gerenenciamento de usuários formado ao menos por 2 componentes:
     * Cadastro de usuários
     * Listagem de usuários
 
@@ -725,7 +724,7 @@ export const state = {
 As mutações são funções que podem modificar o state e é dentro das mutações que a lógica de 
 atualização deve ser escrita.
 
-Uma **mutation** se parece assim:
+As **mutations** são com as funções abaixo:
 
 ```javascript
 /*src/store/mutations/user/index.js*/
@@ -744,8 +743,7 @@ foram declaradas dentro do arquivo index.js na pasta **user** no diretório das 
 o código fica organizado e sempre que uma alteração relativa a usuários se fizer necessária,
 as mutations de usuários serão encontradas facilmente.
 
-Observe que cada uma das mutations recebem 2 parâmetros, sendo o primeito o state global e o segundo
-a carga de dados a ser criada, alterada, ou removida no state.
+Observe que cada uma das mutations recebem 2 parâmetros, sendo o primeiro o state global e o segundo a carga de dados a ser criada, alterada, ou removida do state.
 
 ```javascript
 /*src/store/mutations/user/index.js*/
@@ -757,7 +755,7 @@ const addUser = (state, payload) => {
 
 const removeUser = (state, payload) => {
     const userList = state.userList.filter( user => {
-        if(user.id !== payload.id) return user
+        if(user.userId !== payload.userId) return user
     })
     return { ...state, userList }
 }
@@ -768,13 +766,13 @@ export const userMutations = {
 }
 ```
 
-Acima o código completo das mutatio para adicionar e remover usuários da store.
+Acima o código completo das mutations para adicionar e remover usuários da store.
 
-Oberserve que cada **mutation** retorna uma mutação do estado já com todas as alterações
-necessárias. Ou seja, elas modifica o estado e retornam a nova representação do mesmo.
+Oberserve que cada **mutation** retorna uma mutação do estado, essa mutação é um objeto contendo todas as alterações do state.
 
-Uma vez que já estão definidos o state global e as mutations que o modificarão é chegada a 
-hora de completar a store.
+As mutations modificam o estado e retornam a nova representação dele.
+
+Para ter a store completa, é necessário definir o state e seus atributos e as mutatios que o modificarão.
 
 3. **Fabricando a store**
 
@@ -822,20 +820,18 @@ export const store = storeFactory({
 
 #### INTEGRANDO A STORE EM COMPONENTES
 
-Para utilizar a store de dados em componentes basta importá-la para na sequência definir o
-state do componente.
+Para utilizar a store de dados em componentes basta importá-la e definir o state do componente.
 
 ```javascript
 //componentes/userCreate/index.js
 
+import { observerFactory } from 'lemejs'
 import { store } from '../../store'
 
 const appUserCreate = ({props}) => {
-
-    const state = {
-        title: 'User Registration',
-        user: {}
-    }
+    const state = observerFactory({
+        ...store.getState()
+    })
 }
 ```
 
@@ -851,7 +847,7 @@ import { store } from '../../store'
 const appUserCreate = ({props}) => {
 
     const state = {
-        title: 'User Registration',
+        ...state.getState(),
         user: {}
     }
 
@@ -881,14 +877,13 @@ const appUserCreate = ({props}) => {
 }
 ```
 
-Conforme o código acima, quando o botão adicionar usuário for clicado, a função addUser será executada e a store emit uma ação **addUser** que executa a mutation de mesmo nome realizando
-a adição no novo usuário na lista de usuários.
+Conforme o código acima, quando o botão adicionar usuário for clicado, a função addUser será executada e a store emit uma ação **addUser** e transmite os dados do novo usuário através dessa.Isso faz com que a mutation com o mesmo nome da ação seja executada realizando a inclusão do novo usuário na lista de usuários.
 
-Aproveitando o evento de adição é possível fazer com que o formulário do componente de cadastro seja apagado por completo para facilitar um novo cadastro e também é possível fazer com que a listagem de usuários seja atualizada no outro componente.
+Aproveitando o evento de inclusão é possível fazer com que o formulário do componente de cadastro seja apagado por completo para facilitar um novo cadastro e também é possível fazer com que a listagem de usuários seja atualizada no outro componente.
 
 * **Limpando o formulário de cadastro**
 
-Para limpar o formulário de cadastro basta zerar as informações do usuário no state local do componente de cadastro.
+Para limpar o formulário de cadastro basta apagar as informações do usuário no state local do componente de cadastro.
 
 É completamente possível tirar proveito dos hooks para ouvir ações da store e reagir a elas. Então, tirando proveito disso o state local pode ser apagado.
 
@@ -900,7 +895,7 @@ import { store } from '../../store'
 const appUserCreate = ({props}) => {
 
     const state = {
-        title: 'User Registration',
+        ...store.getState(),
         user: {}
     }
 
@@ -954,8 +949,8 @@ const beforeOnInit = () => {
 
 No trecho em destaque, através do hook **beforeOnInit** que é executado uma única vez antes
 do componente inicializar, foi adicionado um ouvinte da store que será executado sempre que
-a action addUser for disparada. Assim, toda vez que um novo usuário for adicionado o state
-local do componente cadastro de usuários será apagado.
+a action addUser for disparada. Assim, toda vez que um novo usuário for adicionado, o state
+local do componente e o formulário de cadastro de usuários serão apagados.
 
 * **Atualizando a lista de usuários**
 
@@ -967,10 +962,10 @@ import { store } from '../../store'
 
 const appUserCreate = ({props}) => {
 
-    const { userList } = store.get()
+    const { userList } = store.getState()
 
     const state = {
-        title: 'User list',
+        ...store.getState(),
         userList
     }
 
@@ -984,7 +979,7 @@ const appUserCreate = ({props}) => {
 }
 ```
 
-No código acima, através do hook beforeOnInit foi adicionado um ouvinte da store através do método ***store.on*** e sempre que a action **addUser** for executada a função **methods.addUser** também é executada atualizando o state local do componente o que força o template do mesmo a ser atualizado com a nova lista de usuários.
+No código acima, através do hook beforeOnInit foi adicionado um ouvinte da store através do método ***store.on*** e sempre que a action **addUser** for executada a função **addUser** também é executada atualizando o state local do componente o que força o template do mesmo a ser atualizado com a nova lista de usuários.
 
 Ainda resta uma última ação necessária. A remoção de usuários.
 
@@ -996,7 +991,7 @@ import { store } from '../../store'
 
 const appUserCreate = ({ props }) => {
 
-    const { userList } = store.get()
+    const { userList } = store.getState()
 
     const state = {
         title: 'User list',
@@ -1025,7 +1020,7 @@ const appUserCreate = ({ props }) => {
 
     const removeUser = ({ target }) => {
         const id = +target.dataset.id
-        store.removeUser({ id })
+        store.emit('removeUser', { id })
     }
 
     const updateUserList = ({ userList }) => {
@@ -1035,7 +1030,7 @@ const appUserCreate = ({ props }) => {
 }
 ```
 
-Primeiro um ouvinte para a action **removeUser** da store foi definido e esse ouvinte executa o
+Primeiro foi definido um ouvinte para a action **removeUser** da store e esse ouvinte executa o
 método do componente **updateUserList** que por sua vez atualiza a lista de usuários no state
 local do componente forçando o template do mesmo a exibir a lista de usuários atualizada.
 
@@ -1047,9 +1042,9 @@ const updateUserList = ({ userList }) => {
 }      
 ```
 
-Na sequência um evento de clique no usuário a ser removido foi adicionado e sempre que um botão
-de remover usuário é clicar a action **removeUser** é disparada o que executa a mutation de mesmo
-nome removendo o usuário através do **id** fornecido.
+Na sequência foi adicionado um evento de clique no usuário a ser removido e sempre que o botão
+remover usuário é clicado a action **removeUser** é disparada o que executa a mutation de mesmo
+nome, que remove o usuário identificado através do **id** fornecido.
 
 ```javascript
 
@@ -1062,17 +1057,15 @@ const onClickToRemoveUser = (on, queryAll) => {
     on('click', buttonRemove, removeUser)
 }    
 
-const methdos = () => ({
-    removeUser ({ target }) {
-        const id = +target.dataset.id
-        store.removeUser({ id })
-    }    
-})
+const removeUser = ({ target })=> {
+    const id = +target.dataset.id
+    store.removeUser({ id })
+}    
 
 ```
 
 Dessa forma, sempre que um usuário for removido o componente será renderizado novamente e a lista 
-de usuários será exibida corretamente.
+de usuários será atualizada e exibida novamente.
 
 
 ## Navegação e Rotas
@@ -1137,7 +1130,11 @@ No trecho acima, a primeira expressão regular ```/^#\/$/``` valida para **true*
 
 Já a expressão ```/^#\/not-found$/``` valida para **true** caso o hash seja ```#/not-found```.
 
-No caso em que o hash atual difere de todas as rotas definidas, o component/view fornecido para **defaultRoute** é carregado no hash fornecido como padrão.
+No caso em que o hash atual difere de todas as rotas definidas, o roteador redireciona a aplicação para um hash definido como padrão.
+
+O hash padrão é definido através da propriedade ***isDefault:true***.
+
+O component fornecido para a rota com a propriedade **isDefault** é carregado após o redirecionamento para o hash padrão.
 
 ```javascript
 {
@@ -1151,6 +1148,8 @@ No caso em que o hash atual difere de todas as rotas definidas, o component/view
  * **Renderizando uma rota**
 
  Para rederizar uma rota é necessário utilizar o componente ```<router-view></router-view>``` do próprio sistema de rotas. No entanto não é mesmo nem necessário importá-lo. Basta inserir a tag do componente de rotas no local desejado e as rotas serão renderizadas.
+
+ Você também pode aplicar estilos globais para controlar o comportamento visual desse componente já que a esse componente não é aplicado nenhum comportamento visual padrão definido através do css.
 
  ```javascript
 //componentes/appUserCreate/index.js
@@ -1174,7 +1173,6 @@ Isso é tudo que há para saber sobre o sistema de rotas de **Leme Js**.
 
 ## Próximos passos
 
-Agora que já conhece mais sobre Leme JS hora de seguir o tutorial, por em prática todos os conceitos vistos até aqui e
-desenvolver uma aplicação reativa completa.
+Agora que já conhece mais sobre Leme JS hora de seguir o tutorial, por em prática todos os conceitos vistos até aqui e desenvolver uma aplicação reativa.
 
 - [Seguir o tutorial](/tutorial)
