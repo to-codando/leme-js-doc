@@ -168,10 +168,10 @@ O parametro **css** é um ***tagged function*** que tem por responsabilidade for
 No fim das contas será renderizado um css como o apresentado abaixo:
 
 ```html
-    <style>
-        app-hello-world h1 { color: blue }
-        app-hello-world_8981-18dd_title { color: red }
-    </style>
+<style>
+    app-hello-world h1 { color: blue }
+    app-hello-world_8981-18dd_title { color: red }
+</style>
 ```
 
 
@@ -322,14 +322,13 @@ A próxima seção dessa documentação, aborda a utilização dessas propriedad
 #### Atualizando o state
 
 ```javascript
+const state = observableFactory({
+    title: 'Default title value'
+})
 
-    const state = observableFactory({
-        title: 'Default title value'
-    })
-
-    state.set({
-        title: 'New title value'
-    })
+state.set({
+    title: 'New title value'
+})
 ```
 
 Observe que acima a função **set** que é uma propriedade especial do **state** recebe como parâmetro um objeto contendo o novo valor da propriedade **title** presente no state. É dessa forma que o state local deve ser atualizado.
@@ -337,17 +336,15 @@ Observe que acima a função **set** que é uma propriedade especial do **state*
 #### RECUPERANDO INFORMAÇÕES DO STATE
 
 ```javascript
+const state = observableFactory({
+    title: 'Default title value'
+})
 
-    const state = observableFactory({
-        title: 'Default title value'
-    })
+// Retorna um objeto estático com as propriedades do state
+const newStaticState = state.get() 
 
-    // Retorna um objeto estático com as propriedades do state
-    const newStaticState = state.get() 
-
-    // Recupera uma propriedade estática do state
-    const { title } = state.get() 
-
+// Recupera uma propriedade estática do state
+const { title } = state.get() 
 ```
 
 Observe acima que a função **get** é uma propriedade especial do **state** e é utilizada para recuperar o estado do componente por completo. Mas, caso alterações nas propriedades de *newStaticState* ocorram, essas alterações não serão refletidas no estado original e não desencadearão efeitos colaterais que atualizam o template do componente.
@@ -359,19 +356,17 @@ As propriedades específicas recuperadas também não desencadeiam efeitos colat
 #### OBSERVANDO ALTERAÇÕES NO ESTADO
 
 ```javascript
+const state = observableFactory({
+    title: 'Default title value'
+})
 
-    const state = observableFactory({
-        title: 'Default title value'
-    })
+const onStateChange = state.on((newPayload) => {
+    console.log(newPayload)
+})
 
-    const onStateChange = state.on((newPayload) => {
-        console.log(newPayload)
-    })
+const onUpdateState = state.on(logger)
 
-    const onUpdateState = state.on(logger)
-
-    logger (value) { console.log(value) }
-
+logger (value) { console.log(value) }
 ```
 
 No exemplo acima, **on** foi utilizada para adicionar funções como observadoras para mudanças no estado. 
@@ -387,17 +382,15 @@ Observe que para ambos os casos, a referência para o observador adicionado é r
 #### REMOVENDO OBSERVADORES
 
 ```javascript
+const state = observableFactory({
+    title: 'Default title value'
+})
 
-    const state = observableFactory({
-        title: 'Default title value'
-    })
+const onStateChange = state.on((newPayload) => {
+    console.log(newPayload)
+})
 
-    const onStateChange = state.on((newPayload) => {
-        console.log(newPayload)
-    })
-
-    state.off(onStateChange)
-
+state.off(onStateChange)
 ```
 
 Para remover um observador basta informar a referencia deste para a função especial **off**.
@@ -553,26 +546,22 @@ Abaixo como componentes irmãos podem se comunicar por objetos observáveis.
 * Componente A
 
 ```javascript
+import { messengerA, messengerB } from '../services/messenger'
 
-    import { messengerA, messengerB } from '../services/messenger'
-
-    const beforeOnInit = () => {
-        messengerB.set({ anyData: ''})
-        messengerA.on((payload) => updateState(payload))
-    }
-
+const beforeOnInit = () => {
+    messengerB.set({ anyData: ''})
+    messengerA.on((payload) => updateState(payload))
+}
 ```
 * Componente B
 
 ```javascript
+import { messengerA, messengerB } from '../services/messenger'
 
-    import { messengerA, messengerB } from '../services/messenger'
-
-    const beforeOnInit = () => {
-        messengerA.set({ anyData: ''})
-        messengerB.on((payload) => updateState(payload))
-    }
-
+const beforeOnInit = () => {
+    messengerA.set({ anyData: ''})
+    messengerB.on((payload) => updateState(payload))
+}
 ```
 
 Observe que cada componente tem seu próprio serviço de mensagem assim como na 
@@ -619,10 +608,8 @@ Para criar o serviço de gerenciamento de eventos é necessário importar a fáb
 ```javascript
 //services/eventDrive/index.js
 
-    import { pubsubFactory } from 'lemejs'
-
-    export const eventDrive = pubsubFactory()
-
+import { pubsubFactory } from 'lemejs'
+export const eventDrive = pubsubFactory()
 ```
 
 2. **Usando o serviço nos compoentes**
@@ -634,15 +621,15 @@ Uma boa maneira para começar a usá-lo é se inscrevendo para ouvir eventos dis
 ```javascript
 //component/anyCompoent/index.js
 
-    import { eventDrive } from '../../services/eventDrive'
+import { eventDrive } from '../../services/eventDrive'
 
 //código omitido
 
-    const beforeOnInit = () => {
-        eventDrive.on('onIncrement', (payload) => {
-            console.log(payload)
-        })            
-    }
+const beforeOnInit = () => {
+    eventDrive.on('onIncrement', (payload) => {
+        console.log(payload)
+    })            
+}
 
 //código omitido
 ```
@@ -658,23 +645,20 @@ Você pode criar quaisquer nomes para eventos, mas, é recomendado a convenção
 Exemplos:
 
 ```javascript
+// Evento 1
+eventDrive.on('onIncrement', (payload) => {
+    console.log(payload)
+})  
 
-    // Evento 1
-    eventDrive.on('onIncrement', (payload) => {
-        console.log(payload)
-    })  
+// Evento 2
+eventDrive.on('onChangeTitle', (payload) => {
+    console.log(payload)
+})  
 
-    // Evento 2
-    eventDrive.on('onChangeTitle', (payload) => {
-        console.log(payload)
-    })  
-
-    // Evento 3
-    eventDrive.on('onGetData', (payload) => {
-        console.log(payload)
-    })  
-
-
+// Evento 3
+eventDrive.on('onGetData', (payload) => {
+    console.log(payload)
+})  
 ```
 
 
@@ -730,13 +714,13 @@ A store de dados deve ser estruturada com base nos dados consumidos por componen
 ```javascript
 /*src/store/state/index.js*/
 
-    export const state = {
-        userList: [
-            {userId: 1, userName: 'Jhon', userEmail: 'jhon@email.com'},
-            {userId: 2, userName: 'Bill', userEmail: 'bill@email.com'},
-            {userId: 3, userName: 'Anie', userEmail: 'anie@email.com'},
-        ]
-    }
+export const state = {
+    userList: [
+        {userId: 1, userName: 'Jhon', userEmail: 'jhon@email.com'},
+        {userId: 2, userName: 'Bill', userEmail: 'bill@email.com'},
+        {userId: 3, userName: 'Anie', userEmail: 'anie@email.com'},
+    ]
+}
 ```
 
 2. **Definindo mutações**
@@ -749,13 +733,13 @@ Uma **mutation** se parece assim:
 ```javascript
 /*src/store/mutations/user/index.js*/
 
-    const addUser = (state, payload) => {}
-    const removeUser = (state, payload) => {}
+const addUser = (state, payload) => {}
+const removeUser = (state, payload) => {}
 
-    export const userMutations = { 
-        addUser, 
-        removeUser 
-    }
+export const userMutations = { 
+    addUser, 
+    removeUser 
+}
 ```
 
 Como pode ver, acima foram definidas 2 funções **addUser** e **removeUser** e essas funções
@@ -769,22 +753,22 @@ a carga de dados a ser criada, alterada, ou removida no state.
 ```javascript
 /*src/store/mutations/user/index.js*/
 
-    const addUser = (state, payload) => {
-        const userList = [...state.userList, payload.newUser]
-        return { ...state, userList }
-    }
+const addUser = (state, payload) => {
+    const userList = [...state.userList, payload.newUser]
+    return { ...state, userList }
+}
 
-    const removeUser = (state, payload) => {
-        const userList = state.userList.filter( user => {
-            if(user.id !== payload.id) return user
-        })
-        return { ...state, userList }
-    }
+const removeUser = (state, payload) => {
+    const userList = state.userList.filter( user => {
+        if(user.id !== payload.id) return user
+    })
+    return { ...state, userList }
+}
 
-    export const userMutations = { 
-        addUser, 
-        removeUser 
-    }
+export const userMutations = { 
+    addUser, 
+    removeUser 
+}
 ```
 
 Acima o código completo das mutatio para adicionar e remover usuários da store.
@@ -802,8 +786,8 @@ O arquivo index.js na raiz da store deve se parecer com isso:
 ```javascript
 /*src/store/index.js*/
 
-    import { state } from './state'
-    import { userMutations } from './mutations/user'    
+import { state } from './state'
+import { userMutations } from './mutations/user'    
 ```
 
 Primeiro, importa-se state e o módulo de mutações. Na sequência, as mutações podem ser agrupadas 
@@ -812,11 +796,11 @@ como no trecho em destaque:
 ```javascript
 /*src/store/index.js*/
 
-    import { userMutations } from './mutations/user'
+import { userMutations } from './mutations/user'
 
-    const mutations = {
-        ...userMutations,
-    }
+const mutations = {
+    ...userMutations,
+}
 ```
 
 Por fim, a store é fabricada através da função **storeFactory** que completa se parece com o código abaixo:
@@ -824,19 +808,19 @@ Por fim, a store é fabricada através da função **storeFactory** que completa
 ```javascript
 /*src/store/index.js*/
 
-    import { storeFactory } from 'lemejs'
+import { storeFactory } from 'lemejs'
 
-    import { state } from './state'
-    import { userMutations } from './mutations/user'
+import { state } from './state'
+import { userMutations } from './mutations/user'
 
-    const mutations = {
-        ...userMutations,
-    }
+const mutations = {
+    ...userMutations,
+}
 
-    export const store = storeFactory({
-        state,
-        mutations
-    })
+export const store = storeFactory({
+    state,
+    mutations
+})
 ```
 
 #### INTEGRANDO A STORE EM COMPONENTES
@@ -847,15 +831,15 @@ state do componente.
 ```javascript
 //componentes/userCreate/index.js
 
-    import { store } from '../../store'
+import { store } from '../../store'
 
-    const appUserCreate = ({props}) => {
+const appUserCreate = ({props}) => {
 
-        const state = {
-            title: 'User Registration',
-            user: {}
-        }
+    const state = {
+        title: 'User Registration',
+        user: {}
     }
+}
 ```
 
 Na sequência pode ser necessário implementar alguma ação para executar a mutation apropriada e realizar a operação necessária.
@@ -865,39 +849,39 @@ No caso do cadastro de usuários, a mutation a ser executada deve ser **addUser*
 ```javascript
 //componentes/appUserCreate/index.js
 
-    import { store } from '../../store'
+import { store } from '../../store'
 
-    const appUserCreate = ({props}) => {
+const appUserCreate = ({props}) => {
 
-        const state = {
-            title: 'User Registration',
-            user: {}
-        }
-
-        const hooks = () => ({
-            afterOnInit
-        })
-
-        const afterOnInit = ({on, queryOnce}) => {
-            onClickToAddUser(on, queryOnce)
-        }
-
-        const onClickToAddUser = (on, queryOnce) => {
-            const buttonSave = queryOnce('button')
-            on('click', buttonSave, addUser)
-        }
-
-        const addUser = () => {
-
-            const newUser = {
-                userId: 4, 
-                userName: 'Eric', 
-                userEmail: 'eric@email.com'
-            }
-
-            store.emit('addUser', newUser)
-        }
+    const state = {
+        title: 'User Registration',
+        user: {}
     }
+
+    const hooks = () => ({
+        afterOnInit
+    })
+
+    const afterOnInit = ({on, queryOnce}) => {
+        onClickToAddUser(on, queryOnce)
+    }
+
+    const onClickToAddUser = (on, queryOnce) => {
+        const buttonSave = queryOnce('button')
+        on('click', buttonSave, addUser)
+    }
+
+    const addUser = () => {
+
+        const newUser = {
+            userId: 4, 
+            userName: 'Eric', 
+            userEmail: 'eric@email.com'
+        }
+
+        store.emit('addUser', newUser)
+    }
+}
 ```
 
 Conforme o código acima, quando o botão adicionar usuário for clicado, a função addUser será executada e a store emit uma ação **addUser** que executa a mutation de mesmo nome realizando
@@ -914,61 +898,61 @@ Para limpar o formulário de cadastro basta zerar as informações do usuário n
 ```javascript
 //componentes/appUserCreate/index.js
 
-    import { store } from '../../store'
+import { store } from '../../store'
 
-    const appUserCreate = ({props}) => {
+const appUserCreate = ({props}) => {
 
-        const state = {
-            title: 'User Registration',
-            user: {}
-        }
+    const state = {
+        title: 'User Registration',
+        user: {}
+    }
 
-        const hooks = () => ({
-            afterOnInit
+    const hooks = () => ({
+        afterOnInit
+    })
+
+    const beforeOnInit = (on, queryOnce) => {
+
+        store.on('addUser', (payload) => {
+            const user = {}
+            state.set({ user })
         })
 
-        const beforeOnInit = (on, queryOnce) => {
-
-            store.on('addUser', (payload) => {
-                const user = {}
-                state.set({ user })
-            })
-
-            onClickToAddUser(on, queryOnce)
-        }
-        
-        const onClickToAddUser = (on, queryOnce) => {
-            const buttonSave = queryOnce('button')
-            on('click', buttonSave, addUser)
-        }     
-
-        const addUser = () => {
-
-            const newUser = {
-                userId: 4, 
-                userName: 'Eric', 
-                userEmail: 'eric@email.com'
-            }
-
-            store.emit('addUser', newUser)
-        }
+        onClickToAddUser(on, queryOnce)
     }
+    
+    const onClickToAddUser = (on, queryOnce) => {
+        const buttonSave = queryOnce('button')
+        on('click', buttonSave, addUser)
+    }     
+
+    const addUser = () => {
+
+        const newUser = {
+            userId: 4, 
+            userName: 'Eric', 
+            userEmail: 'eric@email.com'
+        }
+
+        store.emit('addUser', newUser)
+    }
+}
 ```
 
 Observe o trecho em destaque:
 
 
 ```javascript
-    const hooks = () => ({
-        beforeOnInit
-    })
+const hooks = () => ({
+    beforeOnInit
+})
 
-    const beforeOnInit = () => {
-        store.on('addUser', (payload) => {
-            const user = {}
-            state.set({ user })
-        })
-    }    
+const beforeOnInit = () => {
+    store.on('addUser', (payload) => {
+        const user = {}
+        state.set({ user })
+    })
+}    
 ```
 
 No trecho em destaque, através do hook **beforeOnInit** que é executado uma única vez antes
@@ -982,27 +966,25 @@ local do componente cadastro de usuários será apagado.
 
 //componentes/appUserCreate/index.js
 
-    import { store } from '../../store'
+import { store } from '../../store'
 
-    const appUserCreate = ({props}) => {
+const appUserCreate = ({props}) => {
 
-        const { userList } = store.get()
+    const { userList } = store.get()
 
-        const state = {
-            title: 'User list',
-            userList
-        }
-
-        const beforeOnInit = () => {
-            store.on('addUser', addUser)
-        }  
-
-        const addUser = ({ user }) => {
-            state.set({ user })
-        }
-
-
+    const state = {
+        title: 'User list',
+        userList
     }
+
+    const beforeOnInit = () => {
+        store.on('addUser', addUser)
+    }  
+
+    const addUser = ({ user }) => {
+        state.set({ user })
+    }
+}
 ```
 
 No código acima, através do hook beforeOnInit foi adicionado um ouvinte da store através do método ***store.on*** e sempre que a action **addUser** for executada a função **methods.addUser** também é executada atualizando o state local do componente o que força o template do mesmo a ser atualizado com a nova lista de usuários.
@@ -1013,47 +995,47 @@ Ainda resta uma última ação necessária. A remoção de usuários.
 
 //componentes/appUserCreate/index.
     
-    import { store } from '../../store'
+import { store } from '../../store'
 
-    const appUserCreate = ({ props }) => {
+const appUserCreate = ({ props }) => {
 
-        const { userList } = store.get()
+    const { userList } = store.get()
 
-        const state = {
-            title: 'User list',
-            userList
-        }
-
-        const hooks = () => ({
-            beforeOnInit
-        })
-        
-        const beforeOnInit = ({on, queryAll}) => {
-            store.on('addUser', addUser)
-            store.on('removeUser', updateUserList)
-
-            onClickToRemoveUser(on, queryAll)
-        }   
-        
-        const onClickToRemoveUser = (on, queryAll) => {
-            const buttonRemove = queryAll('button')
-            on('click', buttonRemove, removeUser)
-        }   
-
-        const addUser = ({ user }) => {
-            state.set({ user })
-        }
-
-        const removeUser = ({ target }) => {
-            const id = +target.dataset.id
-            store.removeUser({ id })
-        }
-
-        const updateUserList = ({ userList }) => {
-            state.set({ userList })
-        }  
-
+    const state = {
+        title: 'User list',
+        userList
     }
+
+    const hooks = () => ({
+        beforeOnInit
+    })
+    
+    const beforeOnInit = ({on, queryAll}) => {
+        store.on('addUser', addUser)
+        store.on('removeUser', updateUserList)
+
+        onClickToRemoveUser(on, queryAll)
+    }   
+    
+    const onClickToRemoveUser = (on, queryAll) => {
+        const buttonRemove = queryAll('button')
+        on('click', buttonRemove, removeUser)
+    }   
+
+    const addUser = ({ user }) => {
+        state.set({ user })
+    }
+
+    const removeUser = ({ target }) => {
+        const id = +target.dataset.id
+        store.removeUser({ id })
+    }
+
+    const updateUserList = ({ userList }) => {
+        state.set({ userList })
+    }  
+
+}
 ```
 
 Primeiro um ouvinte para a action **removeUser** da store foi definido e esse ouvinte executa o
@@ -1061,11 +1043,11 @@ método do componente **updateUserList** que por sua vez atualiza a lista de usu
 local do componente forçando o template do mesmo a exibir a lista de usuários atualizada.
 
 ```javascript
-    store.on('removeUser', updateUserList)
+store.on('removeUser', updateUserList)
 
-    const updateUserList = ({ userList }) => {
-        state.set({ userList })
-    }      
+const updateUserList = ({ userList }) => {
+    state.set({ userList })
+}      
 ```
 
 Na sequência um evento de clique no usuário a ser removido foi adicionado e sempre que um botão
@@ -1074,21 +1056,21 @@ nome removendo o usuário através do **id** fornecido.
 
 ```javascript
 
-    const hooks = ({on, queryAll}) => ({
-        onClickToRemoveUser(on, queryAll)
-    })   
-    
-    const onClickToRemoveUser = (on, queryAll) => {
-        const buttonRemove = queryAll('button')
-        on('click', buttonRemove, removeUser)
-    }    
+const hooks = ({on, queryAll}) => ({
+    onClickToRemoveUser(on, queryAll)
+})   
 
-    const methdos = () => ({
-        removeUser ({ target }) {
-            const id = +target.dataset.id
-            store.removeUser({ id })
-        }    
-    })
+const onClickToRemoveUser = (on, queryAll) => {
+    const buttonRemove = queryAll('button')
+    on('click', buttonRemove, removeUser)
+}    
+
+const methdos = () => ({
+    removeUser ({ target }) {
+        const id = +target.dataset.id
+        store.removeUser({ id })
+    }    
+})
 
 ```
 
@@ -1104,35 +1086,35 @@ que havaliam o hash atual para decidir que view será exibida.
 ```javascript
 //routes/index.js
 
-    import { routerFactory } from "lemejs"    
+import { routerFactory } from "lemejs"    
 
-    import {appHome} from './components/appHome'
-    import { appNotFound } from './components/appNotFound'
-    import { appOther } from './components/appOther'
+import {appHome} from './components/appHome'
+import { appNotFound } from './components/appNotFound'
+import { appOther } from './components/appOther'
 
-    const router = routerFactory()
+const router = routerFactory()
 
-    router.add({
-        hash: '/',
-        validator: /^#\/$/,
-        component: appHome,
-        isInitial: true
-    })
+router.add({
+    hash: '/',
+    validator: /^#\/$/,
+    component: appHome,
+    isInitial: true
+})
 
-    router.add({
-        hash: '/other',
-        validator: /^#\/other$/,
-        component: appOther,
-    })
+router.add({
+    hash: '/other',
+    validator: /^#\/other$/,
+    component: appOther,
+})
 
-    router.add({
-        hash: 'not-found',
-        validator: /^#\/not-found$/,
-        component: appNotFound,
-        isDefault: true
-    })
+router.add({
+    hash: 'not-found',
+    validator: /^#\/not-found$/,
+    component: appNotFound,
+    isDefault: true
+})
 
-    export { router }    
+export { router }    
 
 ```
 
@@ -1176,19 +1158,17 @@ No caso em que o hash atual difere de todas as rotas definidas, o component/view
  ```javascript
 //componentes/appUserCreate/index.js
   
+const appMain = (element) => {
 
-    const appMain = (element) => {
-
-        const state = {
-            title: 'Main'
-        }
-
-        const template = ({state, html}) => html`
-            <h1>${state.title}</h1>
-            <router-view></router-view>
-        `
-
+    const state = {
+        title: 'Main'
     }
+
+    const template = ({state, html}) => html`
+        <h1>${state.title}</h1>
+        <router-view></router-view>
+    `
+}
 ```
 
 > É comum que as views definidas pelo sistema de rotas sejam renderizadas no componente principal como acima.
