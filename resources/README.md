@@ -1,84 +1,92 @@
 # A documentação
 
-Nessa documentação você vai encontrar todas as informações que pode precisar sobre Leme JS.
+Nessa documentação você vai encontrar tudo que pode precisar para construir aplicações para a web com Leme JS.
 
-Logo a seguir a documentação apresenta passo a passo cada um dos recursos que você pode querer utilizar na hora de construir suas aplicações SPA.
+Logo a seguir está o passo a passo para dominar os recursos necessários para construir aplicações SPA.
 
+---
     
-## Estrutura 
+## Estrutura do componente
 
-Aplicações construídas com LEME JS podem fazer uso de recursos como:
+Aplicações construídas com LEME JS podem fazer uso de componentes com os recursos abaixo:
 
 - Componentes
     - eventos
-    - ganchos
+    - hooks
     - métodos
-    - diretivas
+    - componentes filhos
 
-- Gerenciamento de estado local
-    - state
-    - compartilhando dados para baixo
-    - compartilhando dados para cima
+- Gerenciamento de estado local e global
+    - Objetos observáveis
 
 - Comunicação entre componentes
     - Por eventos
     - Por observadores
 
-- Gerenciamento de estado global
-    - store de dados
-
 - Navegação
     - Rotas
 
-
-### Componentes
+---
+#### **Funções como componentes**
 
 Para LEME JS componentes são apenas funções que recebem parametros e retornam objetos.
 
-Acompanhe abaixo a estrutura básica de um componente.
-
 ```javascript
+// index.js
 
-export const appHelloWorld = (element) => {
+import { observableFactory } from 'lemejs'
 
-    const template = ({ state, html }) => html`
-        <h1>Hello, ${title}</h1>
-    `
+import template from './template'
+import styles from './styles'
 
-    const styles = ({ ctx, css }) => css`
-        ${ctx} h1 { color: blue }
-    `
+export const appHelloWorld = ({ props }) => {
 
-    const state = observableFactory({
-        title: 'this is a simple component.'
-    })
+    const state = observableFactory({ title: 'Olá!' })
 
-    return {
-        state,
-        template,
-        styles
-    }
+    return { state, template, styles }
 }
 
 ```
 
-*Você pode estar pensando que essa quantidade de código é grande para um componente tão básico.* 
+Acima o arquivo principal, onde a lógica do componente deve ser escrita.
 
-Bem, a verdade e que *LEME JS* precisa de mais código para criar componentes do que frameworks e biliotecas famosas. Mas, há um bom motivo.
+#### Template do componente
+
+```javascript
+//template.js
+
+const template = ({ state, props, html }) => html`
+    <h1>Hello, ${title}</h1>
+`
+
+```
+
+Acima o arquivo de template, onde toda a estrutura html deve ser escrita.
+
+#### CONTROLADOR DO COMPONENTE
+
+```javascript
+//styles.css
+
+const styles = ({ ctx, props, css }) => css`
+    ${ctx} h1 { color: blue }
+`
+
+```
+
+Acima o arquivo de estilos css, onde toda a configuração visual deve ser escrita.
+
+*Você pode estar pensando que essa quantidade de código é grande para um componente tão básico.  Mas, há um bom motivo para isso...* 
 
 > **LEME JS não faz mágica, não esconde nada de você**.
 
-O componente poderia ser refatorado facilmente o que diminuiria a quantidade de código. Por agora, 
-é importante entender a responsabilidade de cada um dos trechos do código acima. Mas, logo a frente
-o componente será refatorado o que dará a impressão de que ele é bem menor.
-
-#### 1 - Nome do componente
+#### 1 - NOME DO COMPONENTE
 
 Componentes para *LEME JS* são apenas funções e por isso o nome de cada função de componente é muito importante, pois, é através desse
-nome que a tag html do componente será relacionada a sua função manipuladora.
+nome que a tag html do componente será definida.
 
 ```javascript
-export const appHelloWorld = (element) => { ... }
+export const appHelloWorld = ({ props }) => { ... }
 ```
 
 É como se o nome da função no trecho acima fosse utilizado para criar a tag html do componente abaixo.
@@ -87,20 +95,20 @@ export const appHelloWorld = (element) => { ... }
 <app-hello-world> ...conteúdo... </app-hello-world>
 ```
 
-Perceba que enquanto o nome das função manipuladora é definido em camelCase, o nome da tag do componente 
-é definido utilizando kebab case que separadas por traço as palavras que formam a tag.
+Perceba que enquanto o nome das função manipuladora é definido em ***camel Case***, o nome da tag do componente é definido utilizando ***kebab case*** ou seja, semparação por traços das palavras que formam a tag.
 
-> **Esse comportamento é adotado para respeitar as regras do HTML5 sobre criação de tags personalizadas.**
+> *Esse comportamento é adotado para respeitar as regras do HTML5 sobre criação de tags personalizadas.*
 
-#### 2 - Estado do componente
+#### 2 - ESTADO 
 
 ```javascript
+//index.js
 
-export const appHelloWorld = (element) => {
+export const appHelloWorld = ({ props }) => {
     //código omitido...
 
     const state = observableFactory({
-        title: 'this is a simple component.'
+        title: 'Olá!'
     })
 
     return {
@@ -111,126 +119,70 @@ export const appHelloWorld = (element) => {
 ```
 > Através da variável **state** o estado do componente é definido. 
 
-Alterações em qualquer uma das propriedades em ***state***, resultará em um efeito
-colateral que atualizará o template exibindo a alteração realizada através do mesmo.
+Qualquer alteração nas propriedades do objeto de estado resultará na atualização do template do componente.
 
-Graças a função fábrica ***observableFactory*** que fabrica um objeto observável e o retorna
-a variável ***state*** armazenado esse objeto observável.
+É graças a função fábrica ***observableFactory*** que retorna um objeto observável que se faz possível detectar alterações no estado da aplicação e reagir a elas.
 
-O ***state*** então é retornado pela função fabrica manipuladora ***appHelloWorld***  para que ***LEME JS*** 
-se encarregue de atualizar o template com a informação nova inserida ou carregada no state.
+O state é um objeto observável e sempre que modificado o componente é renderizado novamente.
 
-#### 3 - Template do componente
+#### 3 - TEMPLATE 
 
 O template do componente é responsável por exibir os dados armazenados nas propriedades do state do componente.
 
 ```javascript
+//template.js
 
-export const appHelloWorld = (element) => {
-
-    const template = ({ state, html }) => html`
-        <h1>Hello, ${title}</h1>
-    `
-    //código omitido...
-
-    return {
-        template,
-        //código omitido...
-    }
-}
-
+const template = ({ state, props, html }) => html`
+    <h1>Hello, ${title}</h1>
+`
 ```
 
-Observe que a função template é um mero **literal template** que recebe os parâmetros state e html e
-retorna um **tagged template** *html* com o valor da propriedade *title* presente no state.
+Observe que a função template é um mero **literal template** que recebe os parâmetros state, props e html e retorna um **tagged template** *html* com o valor da propriedade *title* presente no state.
 
 > Acima html é um tagged function, se você não sabe sobre tagged functions ou literal templates vai gostar
 > de ler mais sobre o assunto [aqui](https://css-tricks.com/template-literals/).
 
-#### 4 - Estilos CSS
+#### 4 - ESTILOS CSS
 
 A função **styles** é reponsável por definir e retornar os estilos css do componente.
 
 ```javascript
-export const appHelloWorld = (element) => {
+//styles.js
 
-    //código omitido
-    const styles = ({ ctx, css }) => css`
-        ${ctx} h1 { color: blue }
-    `
-
-    return {
-        //código omitido
-        styles
-    }
-}
+const styles = ({ ctx, props, css }) => css`
+    ${ctx} h1 { color: blue }
+    .ctx-title { color: red }
+`
 ```
 
-Observe que a função styles acima extrai 2 parâmetros sendo o primeiro **ctx** o escopo
-do componente e o segundo **css** um tagged function.
+Observe que a função styles acima tem acesso aos parâmetros ***ctx, props*** e ***css***.
 
-A variável **ctx** deve ser utilizada para aplicar escopo ao css evitando o vazamento do 
-mesmo para outros componentes.
+A variável **ctx** contém o seletor css do componente e deve ser utilizada para aplicar estilos ao elemento ***root** do próprio componente.
 
-> É recomendado o uso de **ctx** como boa prática.
+A variável ***ctx*** ainda pode ser combinada a classes com o prefixo ***.ctx-*** para indicar que o css respeitará o escopo do componente e não vasará para outros componentes.
 
-A variável **css** tem a função de formatar corretamente o código oferecendo melhor experiência
-de desenvolvimento e recursos como highlight syntax.
+> É recomendado usar sempre que possível o prefixo **.ctx-** nas classes de estilização.
 
-No fim das contas será renderizado algo como:
+O parametro **css** é um ***tagged function*** que tem por responsabilidade formatar aplicar o ***syntax highlight*** nos estilos css oferecendo melhor experiência de desenvolvimento.
+
+No fim das contas será renderizado um css como o apresentado abaixo:
 
 ```html
     <style>
         app-hello-world h1 { color: blue }
+        app-hello-world_8981-18dd_title { color: red }
     </style>
 ```
 
-> Agora que você já compreende a estrutura básica de um componente LEME, o componente será separado
-em 3 partes, template, style e controller.
 
-O template -  *./template.js*
-```javascript
-
-    export default ({ state, html }) => html`
-        <h1>Hello, ${title}</h1>
-    `
-```
-    
-Os estilos CSS - *./styles.js*
-```javascript
-
-    export default ({ ctx, css }) => css`
-        ${ctx} h1 { color: blue; }
-    `
-    
-```
-
-O controller - *./index.js*
-```javascript
-
-import template from './template'
-import styles from './styles'
-
-export const appHelloWorld = ( element ) => {
-
-    const state = observableFactory({
-        title: 'this is a simple component.'
-    })
-
-    return { state, template,  styles  }
-}
-```
-
-> Com esse novo formato, o componente parece bem menor e cada arquivo trata de uma única responsabilidade.
-
-
-#### eventos
+#### EVENTOS
 
 O arquivo index.js que contém o controllador do componente abaixo foi refatorado para incluir eventos
 de interação.
 
-O controller - *./index.js*
+Observe o controlador *./index.js*
 ```javascript
+//index.js
 
 import template from './template'
 import styles from './styles'
@@ -241,29 +193,42 @@ export const appHelloWorld = ( element ) => {
         title: 'this is a simple component.'
     })
 
-    const events = ({on, queryOnce, queryAll}) => ({
-        onClickTitle () {
-            const h1 = queryOnce('h1')
-            on('click', [h1], ({target}) => console.log(target))
-        }
+    const hooks = () => ({
+       afterOnInit
     })
+
+    const afterOnInit = ({on, queryOnce}) => {
+        onClickTitle(on, queryOnce)
+    }
+
+     const onClickTitle = () => {
+        const h1 = queryOnce('h1')
+        on('click', h1, ({target}) => console.log(target))
+    }
 
     return { 
         state, 
         template,  
         styles,
-        events  
+        hooks
     }
 }
 ```
 
-Observe acique que a fábrica de eventos **events** tem acesso aos manipuladores DOM **on, queryOnce e queryAll**. Cada um dos 
-manipuladores possuem responsabilidades específicas:
+Observe acima que os eventos só podem ser adicionados a elementos html caso um hook seja definido.
+
+Cada hook é disparado em momentos específicos do ciclo de vida do componente.
+
+O momento ideal para adicionar eventos a elementos html é após a rederização do componente ou após a inicialização do mesmo.
+
+Para adicionar eventos após a inicialização do componente é possível usar o hook ***afterOnInit*** e após a renderização ***afterOnRender***.
+
+Hooks são apenas funções que podem acessas os métodos ***on, queryOnce e queryAll***.
 
 **queryOnce**
 
 - Encontra um elemento html especifico no componente
-- retorna um element html
+- retorna um elemento html
 
 **queryAll** 
 
@@ -272,130 +237,11 @@ manipuladores possuem responsabilidades específicas:
 
 **on** 
 
-- Adiciona um evento a um elemento html para executar uma função ou método do componente.
+- Adiciona um evento a um elemento html para executar uma função.
 - O primeiro parâmetro recebido deve ser o nome do evento
-- O segundo parâmetro deve ser o array de elementos para receber um *event listener*
+- O segundo parâmetro deve ser um ou mais elementos html definidos com queryOnce ou queryAll
 - O terceiro parâmetro deve ser a função ou método a ser executado
 
-> A função **on** ainda consegue acessar o parâmetro **methods** e é através desse 
-parâmetro que os métodos do componente são disponibilizados dentro da propriedade 
-**events** do componente.
-
-#### eventos em campos de formulário
-
-É recomendo a utlização de debouceTime nos eventos adicionados em campos de formulário.
-
-No caso de campos de texto por exemplo, isso é necessário porque quando o input altera o
-estado do componente e o template é re-renderizado, o input deve ser mantido em fócu. 
-Veja abaixo: 
-
-O controller - *./index.js*
-```javascript
-
-import template from './template'
-import styles from './styles'
-
-export const appHelloWorld = ( element ) => {
-
-    //codigo omitido
-
-    const events = ({on, queryOnce, methods}) => ({
-        onClickTitle () {
-            const h1 = queryOnce('h1')
-
-            const debounceOptions = {
-                focusEnd: () => ['input', element]
-                debounceTime: 300
-                useDebounce: true                
-            }
-
-            on('click', [h1], ({target}) => {
-                methods.log(target)
-            }, debounceOptions)
-        }
-    })
-
-    return { 
-        //códio omitido
-        events  
-    }
-}
-```
-A variável debouceOptions foi declarada contendo um objeto que define as seguintes propriedades:
-
-- foucsEnd - Uma função anônima que retorna o seletor e o contexto do elemento respectivamente
-- debounceTime - O intervalo em que novas ocorrências do mesmo evento serão canceladas
-- useDebouce - Flag Boolean que define se debouceTime está ativo ou inativo.
-
-```javascript
-    const debounceOptions = {
-        focusEnd: () => ['input', element]
-        debounceTime: 300
-        useDebounce: true                
-    }
-
-    on('click', [h1], ({target}) => {
-        methods.log(target)
-    }, debounceOptions)
-```
-
-> Veja acima que depois de declarada a variável debouceOptions foi passada como **quarto parametro** para 
-a função **on**.
-
-
-#### Methods
-
-Os métodos do componente são apenas funções simples que executam alguma operação e podem retornar algum resultado.
-
-O componente pode mesclar o uso dos métodos com eventos ou hooks para manter o código organizado e ainda
-assim executar todas as tarefas pertinentes.
-
- Veja que  **methods.log** foi passada como handler para a função **on** que a adiciona como listener no evento
- de **"click"**.
-
-```javascript
-    //código omitido
-
-    on('click', [h1], methods.log, debounceOptions)
-``` 
-
-Só é possível acessar o método log do componente nos eventos por que ele foi declarado como no expemplo abaixo e é
-assim que um método sempre será declarado.
-
-```javascript
-
-    const appHelloWorld = (element) => {
-        //código omitido
-        const methods = () => ({
-            log ({target}) {
-                console.log(target.value)
-            }
-        })
-
-        return {
-            methods
-        }
-    }
-```
-
-Logo após a declaração da propriedade **events** do componente, **methods** é declaro e events
-passa a ter acesso às funções da propriedade methods do componente.
-
-```javascript
-    const events = ({ methods }) => ({  
-        //Acesso aos métodos declarados
-       anyEvent() {
-            methods.any('show any value')
-       }
-    })   
-    
-    const methods = () => ({ 
-        //código omitido
-        any (value) { 
-            //any action
-        }
-    })
-```    
 
 #### Hooks
 
@@ -407,15 +253,20 @@ Atualmente os hooks são quatros funções que podem ser executadas, cada uma, e
 - afterOnRender - Executada depois da renderização do componente e toda vez que é renderizado
 
 ```javascript
-const appHelloWorld = (element) => {
+const appHelloWorld = ({ props }) => {
 
     //código omitido
     const hooks = ({ methods }) => ({
-        beforeOnInit () {},
-        afterOnInit () {},
-        beforeOnRender () {},
-        afterOnRender () {},
+        beforeOnInit,
+        afterOnInit,
+        beforeOnRender,
+        afterOnRender,
     })
+
+    const beforeOnInit = () => {}
+    const afterOnInit = () => {}
+    const beforeOnRender = () => {}
+    const afterOnRender = () => {}
 
     return {
         hooks
@@ -424,23 +275,18 @@ const appHelloWorld = (element) => {
 }
 ```
 
-Como os hooks também tem acesso aos métodos do componente, pode ser interessante a partir desses hooks, executar operações
-assincronas como requisições HTTP antes ou após a inicialização do componente.
+Como os hooks também tem acesso aos métodos do componente, pode ser interessante a partir desses hooks, executar operações assincronas como requisições HTTP antes ou após a inicialização do componente.
 
-Também pode ser interessante executar validadores e filtros de dados sempre que o componente é renderizado através dos hooks beforeOnRender e
-afterOnRender.
+Também pode ser interessante executar validadores e filtros de dados sempre que o componente é renderizado através dos hooks beforeOnRender e afterOnRender.
 
-Apesar de poucos, os hooks combinados a objetos observáveis são mais que suficiente para tratar a reatividade de qualquer
-aplicação.
+Apesar de poucos, os hooks combinados a objetos observáveis são mais que suficientes para tratar a reatividade de qualquer aplicação.
 
-> Os **hooks** se combinados com **objetos observáveis** possibilitarão que uma infinidade de ações possam acontecer de 
-forma simples e clara.
+Os **hooks** se combinados com **objetos observáveis** possibilitarão que uma infinidade de ações possam acontecer de forma simples e clara.
 
-
-
-### Gerenciamento de estado local
+### GERENCIAMENTO DE ESTDO LOCAL
 
 O controller - *./index.js*
+
 ```javascript
 
 import template from './template'
@@ -449,23 +295,21 @@ import styles from './styles'
 export const appHelloWorld = ( element ) => {
 
     const state = observableFactory({
-        title: 'this is a simple component.'
+        title: 'Olá!'
     })
 
     return { state, template,  styles  }
 }
 ```
-Na definicação de componente acima, o gerenciamento de estado local é definido pelo trecho em destaque:
+Na definicação de componente acima, o gerenciamento de estado local é definido pelo trecho em destaque logo a seguir:
 
 ```javascript
     const state = observableFactory({
-        title: 'this is a simple component.'
+        title: 'Olá!'
     })
 ```
 
-É dessa forma que deve ser definido o gerenciamento de estado local. Pois, *observableFactory* retorna
-um objeto observável com propriedades especiais que podem ser utilizadas tando para atualizar o *state*
-do componente como para observar atualizações e reagir a elas de alguma maneira.
+É dessa forma que deve ser definido o gerenciamento de estado local. Pois, *observableFactory* retorna um objeto observável com propriedades especiais que podem ser utilizadas tando para atualizar o *state* do componente como para observar atualizações e reagir a elas de alguma maneira.
 
 Abaixo a lista de propriedades retornadas por *observableFactory*.
 
@@ -489,11 +333,9 @@ A próxima seção dessa documentação, aborda a utilização dessas propriedad
     })
 ```
 
-Observe que acima a função **set** que é uma propriedade especial do **state** recebe como
-parâmetro um objeto contendo o novo valor da propriedade **title** presente no state. É dessa
-forma que o state local deve ser atualizado.
+Observe que acima a função **set** que é uma propriedade especial do **state** recebe como parâmetro um objeto contendo o novo valor da propriedade **title** presente no state. É dessa forma que o state local deve ser atualizado.
 
-#### recuperando informações do state
+#### RECUPERANDO INFORMAÇÕES DO STATE
 
 ```javascript
 
@@ -509,18 +351,13 @@ forma que o state local deve ser atualizado.
 
 ```
 
-Observe que acima a função **get** que é uma propriedade especial do **state** é utilizada para recuperar
-o estado do componente completo mas estático. Ou seja, caso alterações nas propriedades de *newStaticState* ocorram,
-essas alterações não serão refletidas no estado original e não desencadearão efeitos colaterais que atualizam a o template
-do componente.
+Observe acima que a função **get** é uma propriedade especial do **state** e é utilizada para recuperar o estado do componente por completo. Mas, caso alterações nas propriedades de *newStaticState* ocorram, essas alterações não serão refletidas no estado original e não desencadearão efeitos colaterais que atualizam o template do componente.
 
-A função **get** pode ser utilzada para recuperar propriedades estáticas específicas do state, bastando informar o nome das
-propriedades dentro de chaves como no exemplo acima onde a propriedade estática **title** foi extraída do *state* através
-da função *get*.
+A função **get** pode ser utilzada para recuperar propriedades estáticas específicas do state, bastando informar o nome das propriedades dentro de chaves como no exemplo acima onde a propriedade estática **title** foi extraída do *state* através da função *get*.
 
 As propriedades específicas recuperadas também não desencadeiam efeitos colaterais caso seus valores sejam alterados.
 
-#### Observando alterações no state
+#### OBSERVANDO ALTERAÇÕES NO ESTADO
 
 ```javascript
 
@@ -532,26 +369,23 @@ As propriedades específicas recuperadas também não desencadeiam efeitos colat
         console.log(newPayload)
     })
 
-    const onUpdateState = state.on(methods.logger)
+    const onUpdateState = state.on(logger)
 
-    const methods = () => ({
-        logger (value) { console.log(value) }
-    })
+    logger (value) { console.log(value) }
 
 ```
 
 No exemplo acima, **on** foi utilizada para adicionar funções como observadoras para mudanças no estado. 
+
 Quando uma alteração ocorrer em uma das propriedades do estado, as funções observadoras serão executadas.
 
-No primeiro caso uma função anônima foi adicionada como observadora. Já no segundo caso um método do componente
-foi adicionado.
+No primeiro caso uma função anônima foi adicionada como observadora. Já no segundo caso um método do componente foi adicionado.
 
-Observe que para ambos os casos, a referência para o observador adicionado é retornado para que posteiormente 
-possa ser removidos caso necessário.
+Observe que para ambos os casos, a referência para o observador adicionado é retornado para que posteiormente possa ser removidos caso necessário.
 
 > referências: onStateChange e OnUpdateState
 
-#### Removendo observadores do state
+#### REMOVENDO OBSERVADORES
 
 ```javascript
 
@@ -573,8 +407,7 @@ Para remover um observador basta informar a referencia deste para a função esp
 
 Uma maneira simples e eficaz para compartilhar o state entre componentes é através de objetos observáveis.
 
-Por exemplo, no caso em que um componente pai quer enviar informações em um determinado momento para o componente
-filho.
+Por exemplo, no caso em que um componente pai quer enviar informações em um determinado momento para o componente filho.
 
 * **Compartilhado para baixo**
 
@@ -589,15 +422,11 @@ export const messengerUp = observableFactory({})
 export const messengerDown = observableFactory({})
 ```
 
-No componente pai então o serviço mensageiro é importado e messengerDown define as informações a serem enviadas aos
-componentes filhos.
+No componente pai então o serviço mensageiro é importado e messengerDown define as informações a serem enviadas aos componentes filhos.
 
-Ainda no componente pai, messengerUp é configurado para escutar alterações que devem gerar efeitos colaterias no 
-componente pai através da função **messengerUp.on** que adiciona uma função como handler a ser executado quando
-uma mensagem de dados for enviada ao componente pai.
+Ainda no componente pai, messengerUp é configurado para escutar alterações que devem gerar efeitos colaterias no componente pai através da função **messengerUp.on** que adiciona uma função como handler a ser executado quando uma mensagem de dados for enviada ao componente pai.
 
-> Receber informações de componentes filhos pode ser interessante por exemplo para validação de formulários onde
-> uma operação só pode ser executada caso todos os campos do formulário estejam validados.
+> Receber informações de componentes filhos pode ser interessante por exemplo para validação de formulários onde uma operação só pode ser executada caso todos os campos do formulário estejam validados.
 
 ```javascript
 //appHelloWorld/index.js
@@ -605,7 +434,7 @@ uma mensagem de dados for enviada ao componente pai.
 import { messengerDown, messengerUp } from '../services/messenger.service.js'
 import { appName } from '../componentes/appName'
 
-const appHelloWorld = ( element ) => {
+const appHelloWorld = ( {props} ) => {
     //código omitido
 
     const state = observableFactory({
@@ -618,20 +447,21 @@ const appHelloWorld = ( element ) => {
         </h1>
     `
 
-    const children = () => ([
+    const children = () => ({
         appName
-    ])
+    })
 
-    hooks () {
-        beforeOnInit () {
-            messengerDown.set({ ...state.get() })
-            messengerUp.on((payload) => console.log(payload))
-        }
-    }
+    const hooks = () => ({
+        beforeOnInit
+    })
+
+    const beforeOnInit = () => {
+        messengerDown.set({ ...state.get() })
+        messengerUp.on((payload) => console.log(payload))
+    }    
 
     return {
         state,
-        element,
         template,
         children,
         hooks
@@ -639,8 +469,7 @@ const appHelloWorld = ( element ) => {
 }
 ```
 
-O exemplo acima é de como se parece um **componente pai** compartilhando o state com o componente filho. Mas,
-o componente filho se parece muito com o componente pai. Veja abaixo:
+O exemplo acima é de como se parece um **componente pai** compartilhando o state com o componente filho. Mas, o componente filho se parece muito com o componente pai. Veja abaixo:
 
 * **compartilhando para cima**
 
@@ -649,7 +478,7 @@ o componente filho se parece muito com o componente pai. Veja abaixo:
 
 import { messengerDown, messengerUp } from '../services/messenger.service.js'
 
-const appName = ( element ) => {
+const appName = ({props}) => {
     //código omitido
 
     const state = observableFactory({
@@ -660,48 +489,40 @@ const appName = ( element ) => {
         <span>${state.name}!</span>
     `
 
-    hooks () {
-        beforeOnInit ({ methods }) {
-            messengerUp.set({ anyData: ''})
-            messengerDown.on((payload) => methods.updateState(payload))
-        }
+    const hooks = () => ({
+        beforeOnInit
+    })
+
+    const beforeOnInit = () => {
+        messengerUp.set({ anyData: ''})
+        messengerDown.on((payload) => updateState(payload))
     }
 
-    const methods = () => ({
-        updateState (payload) {
-            state.set({ ...payload })
-        }
-    })
+    const updateState = (payload) => {
+        state.set({ ...payload })
+    }
 
     return {
         state,
-        element,
         template,
         hooks,
-        methods,
     }
 }
 ```
 
-A semelhança é perceptível. No entando, enquanto o componente pai utiliza o método messengerUp.on 
-para escutar notificações e reagir a elas, o componente filho utiliza messengerUp.set para enviar 
-notificações de dados ao componente pai.
+A semelhança é perceptível. No entando, enquanto o componente pai utiliza o método messengerUp.on para escutar notificações e reagir a elas, o componente filho utiliza messengerUp.set para enviar notificações de dados ao componente pai.
 
-No caso em que o componente pai utiliza o método messengerDown.set para enviar notificações contendo
-dados ao componente filho, o componente filho utiliza o método messegerDown.on para escutar essas notificações de
-dados e reagir a elas.
+No caso em que o componente pai utiliza o método messengerDown.set para enviar notificações contendo dados ao componente filho, o componente filho utiliza o método messegerDown.on para escutar essas notificações de dados e reagir a elas.
 
 * No componente pai
 
 ```javascript
 /*appHelloWorld/index.js*/
 
-    hooks () {
-        beforeOnInit ({ methods }) {
-            messengerDown.set({ ...state.get() })
-            messengerUp.on((payload) => console.log(payload))
-        }
-    }
+const beforeOnInit = () => {
+    messengerDown.set({ ...state.get() })
+    messengerUp.on((payload) => console.log(payload))
+}
 ```
 
 * No componente filho:
@@ -709,15 +530,13 @@ dados e reagir a elas.
 ```javascript
 /*appName/index.js*/
 
-    hooks () {
-        beforeOnInit ({ methods }) {
-            messengerUp.set({ anyData: ''})
-            messengerDown.on((payload) => methods.updateState(payload))
-        }
-    }
+const beforeOnInit = () => {
+    messengerUp.set({ anyData: ''})
+    messengerDown.on((payload) => updateState(payload))
+}
 ```
 
-### Comunicação entre componentes
+### COMUNICAÇÃO ENTRE COMPONENTES
 
 A comunicação entre componentes pode ocorrer entre compontes pai e filho e componentes irmãos.
 
@@ -738,11 +557,9 @@ Abaixo como componentes irmãos podem se comunicar por objetos observáveis.
 
     import { messengerA, messengerB } from '../services/messenger'
 
-    hooks () {
-        beforeOnInit ({ methods }) {
-            messengerB.set({ anyData: ''})
-            messengerA.on((payload) => methods.updateState(payload))
-        }
+    const beforeOnInit = () => {
+        messengerB.set({ anyData: ''})
+        messengerA.on((payload) => updateState(payload))
     }
 
 ```
@@ -752,11 +569,9 @@ Abaixo como componentes irmãos podem se comunicar por objetos observáveis.
 
     import { messengerA, messengerB } from '../services/messenger'
 
-    hooks () {
-        beforeOnInit ({ methods }) {
-            messengerA.set({ anyData: ''})
-            messengerB.on((payload) => methods.updateState(payload))
-        }
+    const beforeOnInit = () => {
+        messengerA.set({ anyData: ''})
+        messengerB.on((payload) => updateState(payload))
     }
 
 ```
@@ -777,6 +592,7 @@ Observe que no trecho de código abaixo está acontecendo exatamente assim:
 * Componente A
 
 ```javascript
+
     messengerB.set({ anyData: ''})
     messengerA.on((payload) => methods.updateState(payload))
 
@@ -784,9 +600,10 @@ Observe que no trecho de código abaixo está acontecendo exatamente assim:
 * Componente B
 
 ```javascript
+
     messengerA.set({ anyData: ''})
     messengerB.on((payload) => methods.updateState(payload))
-
+    
 ```
 
 >O componente B faz uso de **messengerA.set** para enviar uma mensagem ao componente A e
@@ -796,11 +613,9 @@ Dessa forma, qualquer componente que precisar se comunicar com o componente A de
 seu serviço de comunicação. Isso torna fácil o gerenciamento de mensagens e deixa claro no
 código qual a intenção dos componentes que estão trocando informações.
 
-#### Compartilhamento por eventos customizados
+#### COMPARTILHAMENTO POR EVENTOS
 
-Os componentes também podem se comunicar através de eventos customizados. Esses eventos são
-baseados no padrão pubsub e sua implementação se parece bastante com a implementação de objetos
-observáveis.
+Os componentes também podem se comunicar através de eventos. Esses eventos são baseados no padrão pubsub e sua implementação se parece bastante com a implementação de objetos observáveis.
 
 1. **Criando o serviço de mensagem**
 
@@ -809,7 +624,7 @@ Para criar o serviço de gerenciamento de eventos é necessário importar a fáb
 ```javascript
 //services/eventDrive/index.js
 
-    import { pubsubFactory } from 'lemeJS'
+    import { pubsubFactory } from 'lemejs'
 
     export const eventDrive = pubsubFactory()
 
@@ -828,27 +643,22 @@ Uma boa maneira para começar a usá-lo é se inscrevendo para ouvir eventos dis
 
 //código omitido
 
-    const hooks = () => ({
-        beforeOnInit () {
-            eventDrive.on('onIncrement', (payload) => {
-                console.log(payload)
-            })            
-        }
-    })
+    const beforeOnInit = () => {
+        eventDrive.on('onIncrement', (payload) => {
+            console.log(payload)
+        })            
+    }
 
 //código omitido
 ```
 
-No trecho em destaque abaixo, ***eventDrive.on*** faz com que o componente se registre para ser
-notificado de quando um evento ***onIncremente*** é disparado por outro componente. Dessa forma,
-quando esse evento ocorrer o componente que se registrou executa o callback/handler passado como segundo parâmetro para eventDrive.on e pode realizar as operações necessárias com os dados recebidos através do callback fornecido ao evento.
+No trecho em destaque abaixo, ***eventDrive.on*** faz com que o componente se registre para ser notificado de quando um evento ***onIncremente*** é disparado por outro componente. Dessa forma, quando esse evento ocorrer o componente que se registrou executa o callback/handler passado como segundo parâmetro para eventDrive.on e pode realizar as operações necessárias com os dados recebidos através do callback fornecido ao evento.
 
 > Para adicionar um listener em eventos, **eventDrive.on** recebe 2 parâmetros. Sendo o primeiro uma string contendo o nome do evento e o segundo um callback/handler que recebe um único parâmetro.
 
 3. **Nomes de eventos**
 
-Você pode criar quaisquer nomes para eventos, mas, é recomendado a convenção de prefixar o nome
-do evento com **on** e utilizar **camelCase** na junção de direntes palavras.
+Você pode criar quaisquer nomes para eventos, mas, é recomendado a convenção de prefixar o nome do evento com **on** e utilizar **camelCase** na junção de direntes palavras.
 
 Exemplos:
 
@@ -875,9 +685,7 @@ Exemplos:
 
 ### Gerenciamento de estado global
 
-Aplicações maiores podem precisar de um formato mais flexível e efetivo na comunicação entre componentes
-de diferentes níveis. Nesse caso uma **store** de dados pode ser implementada para gerir o estado da
-aplicação tornando a comunicação entre os componentes mais simples.
+Aplicações maiores podem precisar de um formato mais flexível e efetivo na comunicação entre componentes de diferentes níveis. Nesse caso uma **store** de dados pode ser implementada para gerir o estado da aplicação tornando a comunicação entre os componentes mais simples.
 
 Implementar uma **store** traz diversos benefícios:
 
@@ -1021,7 +829,7 @@ Por fim, a store é fabricada através da função **storeFactory** que completa
 ```javascript
 //./src/store/index.js
 
-    import { storeFactory } from 'lemeJS'
+    import { storeFactory } from 'lemejs'
 
     import { state } from './state'
     import { userMutations } from './mutations/user'
@@ -1036,16 +844,16 @@ Por fim, a store é fabricada através da função **storeFactory** que completa
     })
 ```
 
-#### Integrando a store em componentes
+#### INTEGRANDO A STORE EM COMPONENTES
 
 Para utilizar a store de dados em componentes basta importá-la para na sequência definir o
 state do componente.
 
 ```javascript
-    //componentes/appUserRegistration/index.js
+    //componentes/userCreate/index.js
     import { store } from '../../store'
 
-    const appUserRegistrations = (element) => {
+    const appUserCreate = ({props}) => {
 
         const state = {
             title: 'User Registration',
@@ -1059,51 +867,10 @@ Na sequência pode ser necessário implementar alguma ação para executar a mut
 No caso do cadastro de usuários, a mutation a ser executada deve ser **addUser**.
 
 ```javascript
-    //componentes/appUserRegistration/index.js
+    //componentes/appUserCreate/index.js
     import { store } from '../../store'
 
-    const appUserRegistrations = (element) => {
-
-        const state = {
-            title: 'User Registration',
-            user: {}
-        }
-
-        const events = ({on, queryOnce, methods}) => ({
-            onClickToAddUser () {
-                const buttonSave = queryOnce('button')
-                on('click', [buttonSave], methods.addUser)
-            }
-        })
-
-        const methods = () => ({
-            addUser () {
-                const newUser = {userId: 4, userName: 'Eric', userEmail: 'eric@email.com'}
-                store.emit('addUser', newUser)
-            }
-        })
-    }
-```
-
-Conforme o código acima, quando o botão adicionar usuário for clicado, a função addUser será executada e a store emit uma ação **addUser** que executa a mutation de mesmo nome realizando
-a adição no novo usuário na lista de usuários.
-
-Aproveitando o evento de adição é possível fazer com que o formulário do componente de cadastro
-seja apagado por completo para facilitar um novo cadastro e também é possível fazer com que a
-listagem de usuários seja atualizada no outro componente.
-
-* **Limpando o formulário de cadastro**
-
-Para limpar o formulário de cadastro basta zerar as informações do usuário no state local do componente de cadastro.
-
-É completamente possível tirar proveito dos hooks para ouvir ações da store e reagir a elas. Então,
-tirando proveito disso o state local pode ser apagado.
-
-```javascript
-    //componentes/appUserRegistration/index.js
-    import { store } from '../../store'
-
-    const appUserRegistrations = (element) => {
+    const appUserCreate = ({props}) => {
 
         const state = {
             title: 'User Registration',
@@ -1111,27 +878,82 @@ tirando proveito disso o state local pode ser apagado.
         }
 
         const hooks = () => ({
-            beforeOnInit () {
-                store.on('addUser', (payload) => {
-                    const user = {}
-                    state.set({ user })
-                })
-            }
+            afterOnInit
         })
 
-        const events = ({on, queryOnce, methods}) => ({
-            onClickToAddUser () {
-                const buttonSave = queryOnce('button')
-                on('click', [buttonSave], methods.addUser)
+        const afterOnInit = ({on, queryOnce}) => {
+            onClickToAddUser(on, queryOnce)
+        }
+
+        const onClickToAddUser = (on, queryOnce) => {
+            const buttonSave = queryOnce('button')
+            on('click', buttonSave, addUser)
+        }
+
+        const addUser = () => {
+
+            const newUser = {
+                userId: 4, 
+                userName: 'Eric', 
+                userEmail: 'eric@email.com'
             }
+
+            store.emit('addUser', newUser)
+        }
+    }
+```
+
+Conforme o código acima, quando o botão adicionar usuário for clicado, a função addUser será executada e a store emit uma ação **addUser** que executa a mutation de mesmo nome realizando
+a adição no novo usuário na lista de usuários.
+
+Aproveitando o evento de adição é possível fazer com que o formulário do componente de cadastro seja apagado por completo para facilitar um novo cadastro e também é possível fazer com que a listagem de usuários seja atualizada no outro componente.
+
+* **Limpando o formulário de cadastro**
+
+Para limpar o formulário de cadastro basta zerar as informações do usuário no state local do componente de cadastro.
+
+É completamente possível tirar proveito dos hooks para ouvir ações da store e reagir a elas. Então, tirando proveito disso o state local pode ser apagado.
+
+```javascript
+    //componentes/appUserCreate/index.js
+    import { store } from '../../store'
+
+    const appUserCreate = ({props}) => {
+
+        const state = {
+            title: 'User Registration',
+            user: {}
+        }
+
+        const hooks = () => ({
+            afterOnInit
         })
 
-        const methods = () => ({
-            addUser () {
-                const newUser = {userId: 4, userName: 'Eric', userEmail: 'eric@email.com'}
-                store.emit('addUser', newUser)
+        const beforeOnInit = (on, queryOnce) => {
+
+            store.on('addUser', (payload) => {
+                const user = {}
+                state.set({ user })
+            })
+
+            onClickToAddUser(on, queryOnce)
+        }
+        
+        const onClickToAddUser = (on, queryOnce) => {
+            const buttonSave = queryOnce('button')
+            on('click', buttonSave, addUser)
+        }     
+
+        const addUser = () => {
+
+            const newUser = {
+                userId: 4, 
+                userName: 'Eric', 
+                userEmail: 'eric@email.com'
             }
-        })
+
+            store.emit('addUser', newUser)
+        }
     }
 ```
 
@@ -1140,13 +962,15 @@ Observe o trecho em destaque:
 
 ```javascript
     const hooks = () => ({
-        beforeOnInit () {
-            store.on('addUser', (payload) => {
-                const user = {}
-                state.set({ user })
-            })
-        }
+        beforeOnInit
     })
+
+    const beforeOnInit = () => {
+        store.on('addUser', (payload) => {
+            const user = {}
+            state.set({ user })
+        })
+    }    
 ```
 
 No trecho em destaque, através do hook **beforeOnInit** que é executado uma única vez antes
@@ -1157,10 +981,10 @@ local do componente cadastro de usuários será apagado.
 * **Atualizando a lista de usuários**
 
 ```javascript
-    //componentes/appUserRegistration/index.js
+    //componentes/appUserCreate/index.js
     import { store } from '../../store'
 
-    const appUserRegistrations = (element) => {
+    const appUserCreate = ({props}) => {
 
         const { userList } = store.get()
 
@@ -1169,33 +993,27 @@ local do componente cadastro de usuários será apagado.
             userList
         }
 
-        const hooks = ({ methods }) => ({
-            beforeOnInit () {
-                store.on('addUser', methods.addUser)
-            }
-        })    
+        const beforeOnInit = () => {
+            store.on('addUser', addUser)
+        }  
 
-        const methods = () => ({
-            addUser ({ user }) {
-                state.set({ user })
-            }
-        })
+        const addUser = ({ user }) => {
+            state.set({ user })
+        }
+
 
     }
 ```
 
-No código acima, através do hook beforeOnInit foi adicionado um ouvinte da store através do método
-***store.on*** e sempre que a action **addUser** for executada a função **methods.addUser**
-também é executada atualizando o state local do componente o que força o template do mesmo a ser
-atualizado com a nova lista de usuários.
+No código acima, através do hook beforeOnInit foi adicionado um ouvinte da store através do método ***store.on*** e sempre que a action **addUser** for executada a função **methods.addUser** também é executada atualizando o state local do componente o que força o template do mesmo a ser atualizado com a nova lista de usuários.
 
 Ainda resta uma última ação necessária. A remoção de usuários.
 
 ```javascript
-    //componentes/appUserRegistration/index.js
+    //componentes/appUserCreate/index.js
     import { store } from '../../store'
 
-    const appUserRegistrations = (element) => {
+    const appUserCreate = ({ props }) => {
 
         const { userList } = store.get()
 
@@ -1204,36 +1022,34 @@ Ainda resta uma última ação necessária. A remoção de usuários.
             userList
         }
 
-        const hooks = ({ methods }) => ({
-            beforeOnInit () {
-                store.on('addUser', methods.addUser)
-                store.on('removeUser', methods.updateUserList)
-            }
+        const hooks = () => ({
+            beforeOnInit
         })
+        
+        const beforeOnInit = ({on, queryAll}) => {
+            store.on('addUser', addUser)
+            store.on('removeUser', updateUserList)
 
-        const events = ({on, queryOnce, methods}) => ({
-            onClickToRemoveUser () {
-                const buttonRemove = queryAll('button')
-                on('click', [buttonRemove], methods.removeUser)
-            }
-        })            
+            onClickToRemoveUser(on, queryAll)
+        }   
+        
+        const onClickToRemoveUser = (on, queryAll) => {
+            const buttonRemove = queryAll('button')
+            on('click', buttonRemove, removeUser)
+        }   
 
-        const methods = () => ({
+        const addUser = ({ user }) => {
+            state.set({ user })
+        }
 
-            addUser ({ user }) {
-                state.set({ user })
-            },
+        const removeUser = ({ target }) => {
+            const id = +target.dataset.id
+            store.removeUser({ id })
+        }
 
-            removeUser ({ target }) {
-                const id = +target.dataset.id
-                store.removeUser({ id })
-            },
-
-            updateUserList ({ userList }) {
-                state.set({ userList })
-            }   
-
-        })
+        const updateUserList = ({ userList }) => {
+            state.set({ userList })
+        }  
 
     }
 ```
@@ -1243,13 +1059,11 @@ método do componente **updateUserList** que por sua vez atualiza a lista de usu
 local do componente forçando o template do mesmo a exibir a lista de usuários atualizada.
 
 ```javascript
-    store.on('removeUser', methods.updateUserList)
+    store.on('removeUser', updateUserList)
 
-    const methods = () => ({
-        updateUserList ({ userList }) {
-            state.set({ userList })
-        }      
-    })
+    const updateUserList = ({ userList }) => {
+        state.set({ userList })
+    }      
 ```
 
 Na sequência um evento de clique no usuário a ser removido foi adicionado e sempre que um botão
@@ -1258,12 +1072,14 @@ nome removendo o usuário através do **id** fornecido.
 
 ```javascript
 
-    const events = ({on, queryOnce, methods}) => ({
-        onClickToRemoveUser () {
-            const buttonRemove = queryAll('button')
-            on('click', [buttonRemove], methods.removeUser)
-        }
-    })     
+    const hooks = ({on, queryAll}) => ({
+        onClickToRemoveUser(on, queryAll)
+    })   
+    
+    const onClickToRemoveUser = (on, queryAll) => {
+        const buttonRemove = queryAll('button')
+        on('click', buttonRemove, removeUser)
+    }    
 
     const methdos = () => ({
         removeUser ({ target }) {
@@ -1280,60 +1096,82 @@ de usuários será exibida corretamente.
 
 ## Navegação e Rotas
 
-Atualmente a sistema de navegação de **LemeJs** é baseado em **hash (#)** e expressões regulares
+Atualmente a sistema de navegação de **lemejs** é baseado em **hash (#)** e expressões regulares
 que havaliam o hash atual para decidir que view será exibida.
 
 ```javascript
     //routes/index.js
+    import { routerFactory } from "lemejs"    
 
-    import {appHome} from './components/appHome';
-    import { appNotFound } from "./components/appNotFound";
+    import {appHome} from './components/appHome'
+    import { appNotFound } from "./components/appNotFound"
+    import { appOther } from './components/appOther
 
+    const router = routerFactory()
 
-    export const routes = {
-    firstRoute: { hash: "#/", component: appHome },
-    defaultRoute: { hash: "#/404", component: appNotFound },
-    otherRoutes: [
-        { hashExp: /^#\/$/, component: appHome },
-        { hashExp: /^#\/other$/, component: appNotFound },
-    ],
-    };
+    router.add({
+        hash: '/',
+        validator: /^#\/$/,
+        component: appHome,
+        isInitial: true
+    })
+
+    router.add({
+        hash: '/other',
+        validator: /^#\/other$/,
+        component: appOther,
+    })
+
+    router.add({
+        hash: 'not-found',
+        validator: /^#\/not-found$/,
+        component: appNotFound,
+        isDefault: true
+    })
+
+    export { router }    
 
 ```
 
-Como pode ver acima, as rotas da aplicação são definidas através de um objeto.
+Como pode ver acima, as rotas da aplicação são definidas através de um objeto ***router***.
 
 * **Propriedades de rotas**
-    - firstRoute - Primeira rota a ser carregada na aplicação
-    - defaultRoute - Rota carregada no caso de hash inválido ou rota inexistente
-    - otherRoutes - Lista de rotas baseadas em regex que havalia o hash atual para carregar uma view
-    - hashExp - Expressão regular usada para havaliar o hash
+    - hash - O hash a ser definido na url
+    - isInitial - Primeira rota a ser carregada na aplicação
+    - isDefault - Rota carregada no caso de hash inválido ou rota inexistente
+    - validator - Expressão regular usada para havaliar o hash
     - component - Componente/view a ser carregado caso a rota seja valido
+
+>Observe que na lista de rotas acima, a segunda rota ***other*** não possui propriedades especiais como isDefault ou is Initial. Isso significa que será carregada apenas quando um hash correspondente for encontrado na url.
 
 * **Expressão regular de rota**
 
 ```javascript
-    { hashExp: /^#\/$/, component: appHome },
-    { hashExp: /^#\/other$/, component: appNotFound },
+{ validator: /^#\/$/, component: appHome },
+{ validator: /^#\/not-found$/, component: appNotFound },
 ```
 
 No trecho acima, a primeira expressão regular ```/^#\/$/``` valida para **true** o hash ```#/``` que muitas vezes representa a página inicial de uma aplicação.
 
-Já a expressão ```/^#\/other$/``` valida para **true** caso o hash seja ```#/other```.
+Já a expressão ```/^#\/not-found$/``` valida para **true** caso o hash seja ```#/not-found```.
 
 No caso em que o hash atual difere de todas as rotas definidas, o component/view fornecido para **defaultRoute** é carregado no hash fornecido como padrão.
 
 ```javascript
-    defaultRoute: { hash: "#/404", component: appNotFound }
+{
+    hash: 'not-found',
+    validator: /^#\/not-found$/,
+    component: appNotFound,
+    isDefault: true
+}
  ```
 
  * **Renderizando uma rota**
 
- Para rederizar uma rota é necessário utilizar o componente ```<router-view></router-view>``` do próprio sistema de rotas. No entanto não é mesmo nem necessário importá-lo. Basta inserir a tag do componente
- de rotas no local desejado e as rotas serão renderizadas.
+ Para rederizar uma rota é necessário utilizar o componente ```<router-view></router-view>``` do próprio sistema de rotas. No entanto não é mesmo nem necessário importá-lo. Basta inserir a tag do componente de rotas no local desejado e as rotas serão renderizadas.
 
  ```javascript
-    //componentes/appUserRegistration/index.js
+    //componentes/appUserCreate/index.js
   
 
     const appMain = (element) => {

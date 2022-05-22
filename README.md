@@ -18,7 +18,7 @@ integração de novos membros em equipes pequenas.
 Se quer aprender algo que realmente pode produzir resultados positivos para você, sua equipe, seu produto e
 sua empresa siga adiante com essa leitura. Caso contrário, pode dar o fora.
 
-## O que e como Leme JS faz?
+## O que Leme JS faz e como faz?
 
 Leme organiza o código através de padrões e convenções como:
 
@@ -40,12 +40,16 @@ Leme organiza o código através de padrões e convenções como:
 
 ## Visão
 
-Os negócios digitais se tornaram o padrão e verdade seja dita. Produto ou serviço, se não estiver na internet, deixa de existir. Por isso, construir aplicações reativas com Leme JS acontece sem mágica, não há nada escondido, Leme só faz o que você decide. 
+Os negócios digitais se tornaram o padrão, verdade seja dita. 
 
-A vantagem dessa abordagem é o foco em construir para o negócio e não para a melhor arquitetura. Isso significa que Leme JS te ajuda com
+Construir aplicações reativas com Leme JS acontece sem mágica, não há nada escondido, Leme só faz o que você decide e não gera complexidade extra. 
+
+A vantagem dessa abordagem é o foco em construir para o negócio e não para os engenheiros e arquitetos. Isso significa que Leme JS te ajuda com
 os 20% de esforço que produz 80% do resultado total.
 
-Utilize Leme somente se deseja arcar com toda a responsabilidade sobre o código escrito e caso não seja essa a sua intenção, talvez Leme JS não seja uma boa escolha.
+Utilize Leme somente se quer criar seus negócios e sistemas rápidamente, sem truques, sem confusão e sem perder tempo.
+
+Se deseja ter total responsabilidade e controle sobre o código escrito, Leme JS está aqui para isso.
 
 ## Instalando Leme
 
@@ -57,12 +61,14 @@ npm install leme
 O forma mais rápida para iniciar um projeto do zero é clonando o template padrão.
 
 ```
-npx degit github:to-codando/leme-js-template
+npx degit github:to-codando/leme-js-template my-app
 ```
 
 ## Próximos passos
 
-Você pode descobrir como fazer mais  com os recursos de Leme JS clicando num dos links abaixo, lendo a documentação completa ou seguindo o tútorial de como construir uma aplicação reativa.
+Você pode descobrir como fazer mais com os recursos de Leme JS clicando num dos links abaixo.
+
+Leia a documentação completa ou siga para o tútorial de como construir uma aplicação reativa com Leme JS.
 
 > Agora é contigo... o que vai fazer?
 
