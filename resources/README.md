@@ -284,7 +284,6 @@ Apesar de poucos, os hooks combinados a objetos observáveis são mais que sufic
 Os **hooks** se combinados com **objetos observáveis** possibilitarão que uma infinidade de ações possam acontecer de forma simples e clara.
 
 ### GERENCIAMENTO DE ESTDO LOCAL
-
 O controller - *./index.js*
 
 ```javascript
@@ -592,18 +591,14 @@ Observe que no trecho de código abaixo está acontecendo exatamente assim:
 * Componente A
 
 ```javascript
-
     messengerB.set({ anyData: ''})
     messengerA.on((payload) => methods.updateState(payload))
-
 ```
 * Componente B
 
 ```javascript
-
     messengerA.set({ anyData: ''})
     messengerB.on((payload) => methods.updateState(payload))
-    
 ```
 
 >O componente B faz uso de **messengerA.set** para enviar uma mensagem ao componente A e
@@ -733,7 +728,7 @@ Considere um aplicativo de gerenenciamento de usuários formada ao menos por 2 c
 A store de dados deve ser estruturada com base nos dados consumidos por componentes da aplicação. Logo o state se deve se parecer como no código abaixo:
 
 ```javascript
-//./src/store/state/index.js
+/*src/store/state/index.js*/
 
     export const state = {
         userList: [
@@ -752,7 +747,7 @@ atualização deve ser escrita.
 Uma **mutation** se parece assim:
 
 ```javascript
-//./src/store/mutations/user/index.js
+/*src/store/mutations/user/index.js*/
 
     const addUser = (state, payload) => {}
     const removeUser = (state, payload) => {}
@@ -772,7 +767,7 @@ Observe que cada uma das mutations recebem 2 parâmetros, sendo o primeito o sta
 a carga de dados a ser criada, alterada, ou removida no state.
 
 ```javascript
-//./src/store/mutations/user/index.js
+/*src/store/mutations/user/index.js*/
 
     const addUser = (state, payload) => {
         const userList = [...state.userList, payload.newUser]
@@ -805,7 +800,7 @@ hora de completar a store.
 O arquivo index.js na raiz da store deve se parecer com isso:
 
 ```javascript
-//./src/store/index.js
+/*src/store/index.js*/
 
     import { state } from './state'
     import { userMutations } from './mutations/user'    
@@ -815,7 +810,7 @@ Primeiro, importa-se state e o módulo de mutações. Na sequência, as mutaçõ
 como no trecho em destaque:
 
 ```javascript
-//./src/store/index.js
+/*src/store/index.js*/
 
     import { userMutations } from './mutations/user'
 
@@ -827,7 +822,7 @@ como no trecho em destaque:
 Por fim, a store é fabricada através da função **storeFactory** que completa se parece com o código abaixo:
 
 ```javascript
-//./src/store/index.js
+/*src/store/index.js*/
 
     import { storeFactory } from 'lemejs'
 
@@ -850,7 +845,8 @@ Para utilizar a store de dados em componentes basta importá-la para na sequênc
 state do componente.
 
 ```javascript
-    //componentes/userCreate/index.js
+//componentes/userCreate/index.js
+
     import { store } from '../../store'
 
     const appUserCreate = ({props}) => {
@@ -867,7 +863,8 @@ Na sequência pode ser necessário implementar alguma ação para executar a mut
 No caso do cadastro de usuários, a mutation a ser executada deve ser **addUser**.
 
 ```javascript
-    //componentes/appUserCreate/index.js
+//componentes/appUserCreate/index.js
+
     import { store } from '../../store'
 
     const appUserCreate = ({props}) => {
@@ -915,7 +912,8 @@ Para limpar o formulário de cadastro basta zerar as informações do usuário n
 É completamente possível tirar proveito dos hooks para ouvir ações da store e reagir a elas. Então, tirando proveito disso o state local pode ser apagado.
 
 ```javascript
-    //componentes/appUserCreate/index.js
+//componentes/appUserCreate/index.js
+
     import { store } from '../../store'
 
     const appUserCreate = ({props}) => {
@@ -981,7 +979,9 @@ local do componente cadastro de usuários será apagado.
 * **Atualizando a lista de usuários**
 
 ```javascript
-    //componentes/appUserCreate/index.js
+
+//componentes/appUserCreate/index.js
+
     import { store } from '../../store'
 
     const appUserCreate = ({props}) => {
@@ -1010,7 +1010,9 @@ No código acima, através do hook beforeOnInit foi adicionado um ouvinte da sto
 Ainda resta uma última ação necessária. A remoção de usuários.
 
 ```javascript
-    //componentes/appUserCreate/index.js
+
+//componentes/appUserCreate/index.
+    
     import { store } from '../../store'
 
     const appUserCreate = ({ props }) => {
@@ -1100,12 +1102,13 @@ Atualmente a sistema de navegação de **lemejs** é baseado em **hash (#)** e e
 que havaliam o hash atual para decidir que view será exibida.
 
 ```javascript
-    //routes/index.js
+//routes/index.js
+
     import { routerFactory } from "lemejs"    
 
     import {appHome} from './components/appHome'
-    import { appNotFound } from "./components/appNotFound"
-    import { appOther } from './components/appOther
+    import { appNotFound } from './components/appNotFound'
+    import { appOther } from './components/appOther'
 
     const router = routerFactory()
 
@@ -1171,7 +1174,7 @@ No caso em que o hash atual difere de todas as rotas definidas, o component/view
  Para rederizar uma rota é necessário utilizar o componente ```<router-view></router-view>``` do próprio sistema de rotas. No entanto não é mesmo nem necessário importá-lo. Basta inserir a tag do componente de rotas no local desejado e as rotas serão renderizadas.
 
  ```javascript
-    //componentes/appUserCreate/index.js
+//componentes/appUserCreate/index.js
   
 
     const appMain = (element) => {
