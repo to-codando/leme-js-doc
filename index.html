@@ -8,11 +8,9 @@
   <meta charset="UTF-8">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Fira+Code:wght@300;400;500;600;700&family=Martel:wght@200;400;700&family=Patua+One&family=Quicksand:wght@300;400;500;600&family=Source+Code+Pro:wght@200;300;400;500&display=swap" rel="stylesheet">
-  
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css"> -->
   <!-- <link rel="stylesheet" href="//unpkg.com/docsify/themes/vue.css"> -->
@@ -22,23 +20,44 @@
 </head>
 <body>
   <style>
+    body {
+      font-family: 'Rubik', sans-serif;
+    }
+
+    .banner {
+      display:flex;
+      justify-content: center;
+      align-items:center;
+      flex-wrap:wrap;
+      height:50vh;
+      width:100%;
+      background: #3c07ba
+    }
+    .logo > p {
+      width:100%;
+      text-align:center;
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight:lighter;
+    }
     .logo {
       display:flex;
       align-items:center;
       justify-content: center;
+      flex-wrap: wrap;
       width:100%;
-      max-width:65em;
-      margin:0 auto;
-      padding:5rem 0 5rem 6rem
     }
 
     .logo img {
       max-width:20rem
     }
-  </style>
 
-  <div class="logo">
-    <img src="./_media/logo.svg" alt="Leme Js- Convenções e padrões + reatividade.">
+  </style>
+  <div class="banner">
+    <div class="logo">
+      <img src="./_media/logo.png" alt="Leme Js- Convenções e padrões + reatividade.">
+      <p>Construa aplicações web robustas com javascript simples</p>
+    </div>
   </div>
 
   <div class="group-links">
@@ -48,46 +67,53 @@
   <style>
 
     :root {
-      --content-max-width                           : 65em;
+      --content-max-width                           : 50em;
 
-      --base-background-color                       : #ebebeb;
-      --base-color                                  : #7568a5;
-      --base-font-size                              : 1rem;
-      --base-font-weight                            : normal;
+      --base-background-color                       : #07091b;
+      --base-color                                  : #6a67a1;
+      --base-font-size                              : 1.3rem;
+      --base-font-weight                            : lighter;
       --base-letter-spacing                         : ;
-      --base-line-height                            : 1.7;
+      --base-line-height                            : 1.6;
 
-      --heading-color                               : #4f51c4;
-      --heading-font-family                         : 'Bree Serif', serif;
-      --heading-h1-font-size                        : 2rem;
+      --heading-color                               : #785eb5;
+      --heading-font-family                         : 'Rubik', sans-serif;;
+      --heading-h1-font-size                        : 1.5rem;
+      --heading-h2-font-size                        : 1.2rem;
+      --heading-h3-font-size                        : 1rem;
+      --heading-h4-font-size                        : 0.8rem;
 
-      --sidebar-nav-padding                         :0 15px 15px;
-      --sidebar-nav-link-color                      : #80889e;
-      --sidebar-nav-link-color--active              : #3864dd;
+      --heading-h1-border-color           :#4b4651 ;
+      --heading-h1-border-style           : dashed;        
+      --heading-h2-border-color           :#4b4651 ;
+      --heading-h2-border-style           : dashed;        
+
+      --sidebar-nav-padding                         :0 20px;
+      --sidebar-nav-link-color                      : #7e7e9f;
+      --sidebar-nav-link-color--active              : #5a27cf;
       --sidebar-nav-link-before-content             : '';
       --sidebar-nav-link-before-content-l3          : '';
       --sidebar-nav-link-before-content-l3--active  : xxx;
       --border-radius-m                             : 10px;
 
-      --sidebar-background                          : #f9f9f9;
-      --sidebar-border-color                        : #4f51c4;
-      --sidebar-name-color                          : #fff;
-      --sidebar-name-background                     : #4f51c4;
-      --sidebar-border-right-width                  : 2px;
-      --sidebar-padding                             : 0 25px;
+      --sidebar-background                          : #0c0c0c;
+      --sidebar-border-color                        : #090909;
+      --sidebar-name-color                          : #de6a29;
+      --sidebar-name-background                     : #3c07ba;
+      --sidebar-border-right-width                  : 1px;
+      --sidebar-padding                             : 0;
       --sidebar-transition-duration                 : var(--duration-fast);
-      --sidebar-width                               :15rem;
+      --sidebar-width                               :16rem;
       --sidebar-name-margin                         : 0;
-      --sidebar-name-padding                        :15px 15px;
-      --sidebar-padding                             :0;
+      --sidebar-name-padding                        :45px 15px;
 
-      --sidebar-toggle-background                   : #4f51c4;
-      --sidebar-toggle-icon-color                   : #CCC;
+      --sidebar-toggle-background                   : #000;
+      --sidebar-toggle-icon-color                   : #ccc;
       
       --code-theme-text                             : #fff;
       
-      --code-theme-background                       : #100346;
-      --code-theme-comment                          : #b8b1b1 ;
+      --code-theme-background                       : #1f1b32;
+      --code-theme-comment                          : #ccc ;
       --code-theme-function                         : #a568f5;
       --code-theme-keyword                          : #db2f85;
       --code-theme-operator                         : #db2f85;
@@ -95,10 +121,32 @@
       --code-theme-selection                        : #db2f85;
       --code-theme-selector                         : #1cbe7b;
       --code-theme-tag                              : #1cbe7b;
-      --code-theme-text                             : #ebebeb;
+      --code-theme-text                             : #6e53a8;
       --code-theme-string                           : #ebebeb;
       --code-theme-variable                         : #7ad1b7;   
       --code-inline-color                           : #db2f85;   
+      --code-inline-background                        : #1f1b32;
+    
+    /* Blockquote */
+    --blockquote-background             : #0e0e03;
+    --blockquote-border-color           :#191d5e ;
+    --blockquote-border-style           :solid ;
+    --blockquote-border-width           :1px ;
+    --blockquote-border-radius          :4px;
+    --blockquote-color                  :#b4b0b0;
+    --blockquote-em-font-family         : ;
+    --blockquote-em-font-size           : ;
+    --blockquote-em-font-style          : ;
+    --blockquote-em-font-weight         : lighter;
+    --blockquote-font-family            : ;
+    --blockquote-font-size              : ;
+    --blockquote-font-style             : ;
+    --blockquote-font-weight            : lighter;
+    --blockquote-quotes-close           : ;
+    --blockquote-quotes-color           :#ccc ;
+    --blockquote-quotes-font-family     : ;
+    --blockquote-quotes-font-size       : ;
+    --blockquote-quotes-open            : ;
     }
    
     .sidebar-nav li>a {
@@ -109,7 +157,7 @@
     
     <script>
       window.$docsify = {
-        name: "LEME JS",
+        name: "",
         el: '#main',
         loadSidebar: true,
         maxLevel   : 2,

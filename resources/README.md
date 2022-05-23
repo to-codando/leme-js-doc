@@ -4,7 +4,7 @@ Nessa documentação você vai encontrar tudo que pode precisar para construir a
 
 Logo a seguir está o passo a passo para dominar os recursos necessários para construir aplicações SPA.
 
----
+
     
 ## Estrutura do componente
 
@@ -26,8 +26,8 @@ Aplicações construídas com Leme JS podem fazer uso de componentes com os recu
 - Navegação
     - Rotas
 
----
-#### **Funções como componentes**
+
+### Funções como componentes
 
 Para Leme JS componentes são apenas funções que recebem parametros e retornam objetos.
 
@@ -78,7 +78,7 @@ Acima o arquivo de estilos css, onde toda a configuração visual deve ser escri
 
 *Você pode estar pensando que essa quantidade de código é grande para um componente tão básico.  Mas, há um bom motivo para isso...* 
 
-> **LEME JS não faz mágica, não esconde nada de você**.
+> *LEME JS não faz mágica, não esconde nada de você*.
 
 #### 1 - NOME DO COMPONENTE
 
@@ -955,7 +955,6 @@ local do componente e o formulário de cadastro de usuários serão apagados.
 * **Atualizando a lista de usuários**
 
 ```javascript
-
 //componentes/appUserCreate/index.js
 
 import { store } from '../../store'
@@ -984,7 +983,6 @@ No código acima, através do hook beforeOnInit foi adicionado um ouvinte da sto
 Ainda resta uma última ação necessária. A remoção de usuários.
 
 ```javascript
-
 //componentes/appUserCreate/index.
     
 import { store } from '../../store'
@@ -1151,7 +1149,7 @@ O component fornecido para a rota com a propriedade **isDefault** é carregado a
 
  Você também pode aplicar estilos globais para controlar o comportamento visual desse componente já que a esse componente não é aplicado nenhum comportamento visual padrão definido através do css.
 
- ```javascript
+```javascript
 //componentes/appUserCreate/index.js
   
 const appMain = (element) => {

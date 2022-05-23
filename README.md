@@ -70,7 +70,5 @@ Você pode descobrir como fazer mais com os recursos de Leme JS clicando num dos
 
 Leia a documentação completa ou siga para o tútorial de como construir uma aplicação reativa com Leme JS.
 
-> Agora é contigo... o que vai fazer?
-
 - Ler a [documentação](/resources/?id=a-documenta%c3%a7%c3%a3o)
 - Seguir o [tutorial](/tutorial/)
