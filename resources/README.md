@@ -11,13 +11,16 @@ Logo a seguir está o passo a passo para dominar os recursos necessários para c
 Aplicações construídas com Leme JS podem fazer uso de componentes com os recursos abaixo:
 
 - Componentes
+    - propriedades
     - eventos
     - hooks
     - métodos
     - componentes filhos
+    - estilos css (CSS in JS)
 
 - Gerenciamento de estado local e global
     - Objetos observáveis
+    - Store de dados
 
 - Comunicação entre componentes
     - Por eventos
@@ -138,9 +141,53 @@ const template = ({ state, props, html }) => html`
 
 Observe que a o template é uma função que recebe os parâmetros state, props e html e retorna um **tagged function** *html* com o valor da propriedade *title* presente no state.
 
-> Acima html é um tagged function, se você não sabe sobre tagged functions ou literal templates vai gostar de ler mais sobre o assunto [aqui](https://css-tricks.com/template-literals/).
+> Acima html é um tagged function, se você não sabe muito sobre tagged functions ou literal templates vai gostar de ler mais sobre o assunto [aqui](https://css-tricks.com/template-literals/).
 
-#### 4 - ESTILOS CSS
+#### 4 - Propriedades estáticas
+
+Os compnentes podem receber informação através de propriedades estáticas.
+
+Essas propriedades são imutáveis e o componete as lê apenas uma vez durante a renderização.
+
+Para definir propriedades de componentes é possível usar a função **toProps** que define o nome da propriedade e seus valores. Veja abaixo:
+
+```javascript
+//template.js
+const template = ({ state, props, toProps, html }) => html`
+    <app-user 
+        ${toProps('profile', state.userProfile)}
+        ${toProps('auth', state.auth)}
+    >
+        Hello, ${state.title}
+    </app-user>
+```
+
+Acima, a função *toProps* foi utilizada para definir a propriedade *profile* e uma segunda propriedade *auth*.
+
+Essas propriedades foram fornecidas ao componente app-user que poderá acessar as mesmas através de seu objeto props.
+
+```javascript
+const appUser = ({ props }) => {
+    console.log(props)
+    return { template, styles }
+}
+
+const template = ({ html, props }) => html`
+    <p>${JSON.stringify(props)}</p>
+`
+
+const styles = ({ css, props }) => css`
+    ${ctx} { 
+        display: inline;
+        color: ${props.profile.color}
+    }
+
+`
+```
+
+No exemplo acima, o componente appUser acessa as propriedades definidas anteriormente e que estão dipsoníveis para o seu controlador, template e estilos css.
+
+#### 5 - ESTILOS CSS
 
 A função **styles** é reponsável por definir e retornar os estilos css do componente.
 
